@@ -21,49 +21,40 @@ using System.Xml.XPath;
 
 static class Program
 {
-	public class Shi
-	{
-		public int id;
-		public int p;
-		public int y;
-		
-		public Shi(int idx, int px, int yx)
-		{
-			id = idx;
-			p = px;
-			y = yx;
-		}
-	}
-	
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var n = inp[0];
-		var m = inp[1];
+		var n = inputter.GetNext().ToInt();
+		var xx = inputter.GetNext().Split().Select(ToInt).ToArray();
 		
-		var l = new List<Shi>();
+		var max = xx.Max();
+		
+		var half = max / 2d;
+		
+		var nx = xx.Where(x => x != max).ToArray();
+		
+		var ac = 0;
+		var wc = max / 2 + 1;
+		
+		if (!nx.Any(x => x == half))
+		{
+			while (ac + 1 < wc)
+			{
+				var wj = (ac + wc) / 2;
+				if (nx.Any(x => half - wj <= x && x <= half + wj))
+				{
+					wc = wj;
+				}
+				else
+				{
+					ac = wj;
+				}
+			}
+			ac++;
+		}
 
-		foreach (var i in Ie(m))
-		{
-			var j = inputter.GetNext().Split().Select(ToInt).ToArray();
-			l.Add(new Shi(i, j[0], j[1]));
-		}
-		
-		var ken = Ie(n).Select(x => 1).ToArray();
-		
-		var result = new string[l.Count()];
-		
-		foreach (var s in l.OrderBy(x => x.y))
-		{
-			var x = ken[s.p - 1]++;
-			result[s.id] = s.p.ToString("000000") + x.ToString("000000");
-		}
-		
-		foreach (var o in result)
-		{
-			Wl(o);
-		}
+
+		Wl(max + " " + nx.First(x => half - ac <= x && x <= half + ac));
 	}
 
 	public class Inputter
@@ -72,10 +63,8 @@ static class Program
 		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"3 3
-1 32
-2 63234324
-3 12234234
+	$@"4
+101 51 50 0
 ";
 
 		private int _index = 0;

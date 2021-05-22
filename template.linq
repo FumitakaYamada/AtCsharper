@@ -101,6 +101,7 @@ static class Program
 3433,3449,3457,3461,3463,3467,3469,3491,3499,3511,3517,3527,3529,3533,3539,3541,3547,3557,3559,3571
 	};
 
+	// 順列
 	static long nPk(long n, long k)
 	{
 		if (n < k) return 0;
@@ -114,6 +115,7 @@ static class Program
 		return x;
 	}
 
+	// 組合せ
 	static long nCk(long n, long k)
 	{
 		if (n < k) return 0;
@@ -329,6 +331,18 @@ static class Program
 		public override string ToString()
 		{
 			return $"X : {X}, Y : {Y}";
+		}
+	}
+
+	public class Range
+	{
+		public int min;
+		public int max;
+
+		public Range(int xx, int yx)
+		{
+			min = xx;
+			max = yx;
 		}
 	}
 

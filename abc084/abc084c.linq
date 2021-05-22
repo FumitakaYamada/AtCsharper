@@ -20,51 +20,44 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 
 static class Program
-{
-	public class Shi
-	{
-		public int id;
-		public int p;
-		public int y;
-		
-		public Shi(int idx, int px, int yx)
-		{
-			id = idx;
-			p = px;
-			y = yx;
-		}
-	}
-	
+{	
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var n = inp[0];
-		var m = inp[1];
+		var n = inputter.GetNext().ToInt();
 		
-		var l = new List<Shi>();
-
-		foreach (var i in Ie(m))
+		var l = new List<int[]>();
+		
+		foreach (var i in Ie(n - 1))
 		{
-			var j = inputter.GetNext().Split().Select(ToInt).ToArray();
-			l.Add(new Shi(i, j[0], j[1]));
+			l.Add(inputter.GetNext().Split().Select(ToInt).ToArray());
 		}
 		
-		var ken = Ie(n).Select(x => 1).ToArray();
-		
-		var result = new string[l.Count()];
-		
-		foreach (var s in l.OrderBy(x => x.y))
+		foreach (var i in Ie(n))
 		{
-			var x = ken[s.p - 1]++;
-			result[s.id] = s.p.ToString("000000") + x.ToString("000000");
-		}
-		
-		foreach (var o in result)
-		{
-			Wl(o);
+			var dur = 0;
+			for (var j = i; j < n - 1; j++)
+			{
+				var sta = l[j];
+				if (dur < sta[1])
+				{
+					dur = sta[1];
+				}
+				
+				var t = dur % sta[2];
+				
+				if (t != 0)
+				{
+					dur += (sta[2] - t);
+				}
+				
+				dur += sta[0];
+			}
+			
+			Wl(dur);
 		}
 	}
+
 
 	public class Inputter
 	{
@@ -72,10 +65,10 @@ static class Program
 		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"3 3
-1 32
-2 63234324
-3 12234234
+	$@"4
+12 13 1
+44 17 17
+66 4096 64
 ";
 
 		private int _index = 0;
@@ -137,6 +130,7 @@ static class Program
 3433,3449,3457,3461,3463,3467,3469,3491,3499,3511,3517,3527,3529,3533,3539,3541,3547,3557,3559,3571
 	};
 
+	// 順列
 	static long nPk(long n, long k)
 	{
 		if (n < k) return 0;
@@ -150,6 +144,7 @@ static class Program
 		return x;
 	}
 
+	// 組合せ
 	static long nCk(long n, long k)
 	{
 		if (n < k) return 0;

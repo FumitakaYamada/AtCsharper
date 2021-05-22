@@ -21,61 +21,23 @@ using System.Xml.XPath;
 
 static class Program
 {
-	public class Shi
-	{
-		public int id;
-		public int p;
-		public int y;
-		
-		public Shi(int idx, int px, int yx)
-		{
-			id = idx;
-			p = px;
-			y = yx;
-		}
-	}
-	
 	static void Main()
 	{
 		var inputter = new Inputter();
+		var s = inputter.GetNext();
+		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		
-		var l = new List<Shi>();
 
-		foreach (var i in Ie(m))
-		{
-			var j = inputter.GetNext().Split().Select(ToInt).ToArray();
-			l.Add(new Shi(i, j[0], j[1]));
-		}
-		
-		var ken = Ie(n).Select(x => 1).ToArray();
-		
-		var result = new string[l.Count()];
-		
-		foreach (var s in l.OrderBy(x => x.y))
-		{
-			var x = ken[s.p - 1]++;
-			result[s.id] = s.p.ToString("000000") + x.ToString("000000");
-		}
-		
-		foreach (var o in result)
-		{
-			Wl(o);
-		}
+		Wl();
 	}
 
 	public class Inputter
 	{
-		//public bool IsDebug { get; } = true;
-		public bool IsDebug { get; } = false;
+		public bool IsDebug { get; } = true;
+		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"3 3
-1 32
-2 63234324
-3 12234234
+	$@"
 ";
 
 		private int _index = 0;
@@ -137,6 +99,7 @@ static class Program
 3433,3449,3457,3461,3463,3467,3469,3491,3499,3511,3517,3527,3529,3533,3539,3541,3547,3557,3559,3571
 	};
 
+	// 順列
 	static long nPk(long n, long k)
 	{
 		if (n < k) return 0;
@@ -150,6 +113,7 @@ static class Program
 		return x;
 	}
 
+	// 組合せ
 	static long nCk(long n, long k)
 	{
 		if (n < k) return 0;
@@ -365,6 +329,18 @@ static class Program
 		public override string ToString()
 		{
 			return $"X : {X}, Y : {Y}";
+		}
+	}
+
+	public class Range
+	{
+		public int min;
+		public int max;
+
+		public Range(int xx, int yx)
+		{
+			min = xx;
+			max = yx;
 		}
 	}
 

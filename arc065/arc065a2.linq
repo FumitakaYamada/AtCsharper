@@ -21,49 +21,55 @@ using System.Xml.XPath;
 
 static class Program
 {
-	public class Shi
-	{
-		public int id;
-		public int p;
-		public int y;
-		
-		public Shi(int idx, int px, int yx)
-		{
-			id = idx;
-			p = px;
-			y = yx;
-		}
-	}
-	
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var n = inp[0];
-		var m = inp[1];
+		var s = inputter.GetNext();
 		
-		var l = new List<Shi>();
+		bool dfs(int i)
+		{
+			if (i == s.Length)
+			{
+				return true;
+			}
+			
+			if (s.Length - i >= 7 && s.Substring(i, 7).Equals("dreamer"))
+			{
+				if (dfs(i + 7))
+				{
+					return true;
+				}
+			}
 
-		foreach (var i in Ie(m))
-		{
-			var j = inputter.GetNext().Split().Select(ToInt).ToArray();
-			l.Add(new Shi(i, j[0], j[1]));
+			if (s.Length - i >= 6 && s.Substring(i, 6).Equals("eraser"))
+			{
+				if (dfs(i + 6))
+				{
+					return true;
+				}
+			}
+
+			if (s.Length - i >= 5 && s.Substring(i, 5).Equals("dream"))
+			{
+				if (dfs(i + 5))
+				{
+					return true;
+				}
+			}
+
+			if (s.Length - i >= 5 && s.Substring(i, 5).Equals("erase"))
+			{
+				if (dfs(i + 5))
+				{
+					return true;
+				}
+			}
+			
+			return false;
 		}
-		
-		var ken = Ie(n).Select(x => 1).ToArray();
-		
-		var result = new string[l.Count()];
-		
-		foreach (var s in l.OrderBy(x => x.y))
-		{
-			var x = ken[s.p - 1]++;
-			result[s.id] = s.p.ToString("000000") + x.ToString("000000");
-		}
-		
-		foreach (var o in result)
-		{
-			Wl(o);
-		}
+
+
+		Wl(dfs(0) ? "YES" : "NO");
 	}
 
 	public class Inputter
@@ -72,10 +78,7 @@ static class Program
 		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"3 3
-1 32
-2 63234324
-3 12234234
+	$@"dreamerer
 ";
 
 		private int _index = 0;
@@ -137,6 +140,7 @@ static class Program
 3433,3449,3457,3461,3463,3467,3469,3491,3499,3511,3517,3527,3529,3533,3539,3541,3547,3557,3559,3571
 	};
 
+	// 順列
 	static long nPk(long n, long k)
 	{
 		if (n < k) return 0;
@@ -150,6 +154,7 @@ static class Program
 		return x;
 	}
 
+	// 組合せ
 	static long nCk(long n, long k)
 	{
 		if (n < k) return 0;
