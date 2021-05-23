@@ -24,22 +24,42 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).OrderBy(x => x).ToArray();
 
-		Wl();
+		var l = new List<long>();
+		
+		var sum = 0L;
+
+		foreach (var i in Ie(a.Length))
+		{
+			sum += a[i];
+			
+			l.Add(sum);
+		}
+		
+		var count = 1;
+		
+		foreach (var i in Ie(a.Length - 1).Reverse())
+		{
+			if (a[i + 1] > l[i] * 2)
+			{
+				break;
+			}
+			count++;
+		}
+
+		Wl(count);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3
+3 1 4
 ";
 
 		private int _index = 0;
@@ -288,11 +308,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public static IEnumerable<int> Ie(int start, int count)

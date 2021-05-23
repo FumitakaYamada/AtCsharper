@@ -24,13 +24,39 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		var b = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		var count = 0L;
+		
+		foreach (var i in Ie(n))
+		{
+			var aa = a[i];
+			var bb = b[i];
+			if (aa == bb) continue;
 
-		Wl();
+			foreach (var j in Ie(bb))
+			{
+				if (i + j >= n - 1)
+				{
+					Wl(-1);
+					return;
+				}
+				
+				var current = a[i + j];
+				var next = a[i + j + 1];
+
+				count++;
+
+				if (bb == next - j - 1)
+				{
+					break;
+				}
+			}
+		}
+
+		Wl(count);
 	}
 
 	public class Inputter
@@ -39,7 +65,9 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"6
+8 5 4 7 4 5
+10 5 6 7 4 1
 ";
 
 		private int _index = 0;
@@ -288,11 +316,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public static IEnumerable<int> Ie(int start, int count)

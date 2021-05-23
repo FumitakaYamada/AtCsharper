@@ -24,13 +24,22 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		var b = inputter.GetNext().Split().Select(ToInt).ToArray();
+		var c = inputter.GetNext().Split().Select(ToInt).ToArray();
 
-		Wl();
+		var aDic = a.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+		var bDic = a.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+		var cDic = a.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+		
+		foreach (var i in Ie(1, n))
+		{
+			
+		}
+		
+
+		Wl(res.Any() ? res.Sum() : 0);
 	}
 
 	public class Inputter
@@ -39,7 +48,10 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3
+1 1 1
+1 1 1
+1 1 1
 ";
 
 		private int _index = 0;
@@ -288,11 +300,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public static IEnumerable<int> Ie(int start, int count)

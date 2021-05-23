@@ -1,5 +1,6 @@
 <Query Kind="Program">
   <Namespace>System.Windows.Forms.DataVisualization.Charting</Namespace>
+  <RuntimeVersion>3.1</RuntimeVersion>
 </Query>
 
 using System;
@@ -24,22 +25,52 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		//var rand = new Random();
+		//n = 200100;
+		//a = Ie(n).Select(x => rand.Next() % 2).ToArray();
 
-		Wl();
+		var dic = a.Select((x, i) => new int[] { x, i + 1 }).ToDictionary(x => x[1], x => x[0]);
+		
+		var balls = new bool[200101];
+		
+		foreach (var i in Ie(1, n).Reverse())
+		{
+			var count = 0L;
+			
+			for (var j = i; j <= n; j += i)
+			{
+				if (balls[j]) count++;
+			}
+			
+			if (count % 2 != dic[i])
+			{
+				balls[i] = true;
+			}
+		}
+		
+		var bl = new List<int>();
+		
+		foreach (var i in Ie(1, n))
+		{
+			if (balls[i]) bl.Add(i);
+		}
+
+		Wl(bl.Count());
+		
+		Wl(string.Join(' ', bl));
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"12
+0 0 0 0 0 0 0 0 0 0 0 1
 ";
 
 		private int _index = 0;

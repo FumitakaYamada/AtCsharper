@@ -290,11 +290,6 @@ static class Program
 		return GetGcd(b, r);
 	}
 
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
-	}
-
 	public static IEnumerable<int> Ie(int start, int count)
 	{
 		return Enumerable.Range(start, count);

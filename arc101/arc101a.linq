@@ -24,22 +24,37 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var n = inp[0];
+		var k = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		var oa = a.OrderBy(x => x).ToArray();
 
-		Wl();
+		var ac = int.MaxValue;
+
+		foreach (var i in Ie(0, n - k + 1))
+		{
+			var range = Math.Abs(oa[i] - oa[i + k - 1]);
+			var zeroDiff = Math.Min(Math.Abs(oa[i]), Math.Abs(oa[i + k - 1]));
+			var sum = range + zeroDiff;
+			if (ac > sum)
+			{
+				ac = sum;
+			}
+		}
+
+		Wl(ac);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"8 5
+-9 -7 -4 -3 1 2 3 4
 ";
 
 		private int _index = 0;
@@ -288,11 +303,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public static IEnumerable<int> Ie(int start, int count)

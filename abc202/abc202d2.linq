@@ -24,22 +24,64 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var a = (int)inp[0];
+		var b = (int)inp[1];
+		var k = inp[2];
+		
+		var dp = new long[a+1, b+1];
+		
+		dp[0, 0] = 1;
+		
+		foreach (var i in Ie(a + 1))
+		{
+			foreach (var j in Ie(b + 1))
+			{
+				if (i > 0)
+				{
+					dp[i,j] += dp[i-1,j];
+				}
+				if (j > 0)
+				{
+					dp[i,j] += dp[i, j-1];
+				}
+			}
+		}
+		
+		string dfs(int aa, int bb, long kk)
+		{
+			if (aa == 0)
+			{
+				return new String('b', bb);
+			}
 
-		Wl();
+			if (bb == 0)
+			{
+				return new String('a', aa);
+			}
+			
+			var dpv = dp[aa - 1, bb];
+
+			if (dpv >= kk)
+			{
+				return "a" + dfs(aa - 1, bb, kk);
+			}
+			else
+			{
+				return "b" + dfs(aa, bb - 1, kk - dpv);
+			}
+		}
+		
+		Wl(dfs(a,b,k));
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"2 2 4
 ";
 
 		private int _index = 0;
@@ -288,11 +330,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public static IEnumerable<int> Ie(int start, int count)

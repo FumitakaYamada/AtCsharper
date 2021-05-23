@@ -24,20 +24,67 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
+		var n = inp[0];
+		var q = inp[1];
+		
+		var ab = new List<int[]>();
+		
+		foreach (var i in Ie(n - 1))
+		{
+			ab.Add(inputter.GetNext().Split().Select(ToInt).ToArray());
+		}
+		
+		var abReverse = ab.Select(x => new int[] { x[1], x[0] }).ToArray();
 
-		Wl();
+		ab.AddRange(abReverse);
+		
+		var abDic = ab.GroupBy(x => x[0]).ToDictionary(x => x.Key - 1, x => x.Select(y => y[1] - 1).ToArray());
+
+		var px = new List<int[]>();
+		
+		foreach (var i in Ie(q))
+		{
+			px.Add(inputter.GetNext().Split().Select(ToInt).ToArray());
+		}
+		
+		var dic = px.GroupBy(x => x[0]).ToDictionary(x => x.Key - 1, x => x.Select(y => y[1]).Sum());
+		
+		var tree = new int[n];
+		
+		void dfs(int p, int parent, int parentValue)
+		{
+			var value = parentValue + (dic.ContainsKey(p) ? dic[p] : 0);
+			tree[p] = value;
+			
+			foreach (var child in abDic[p].Where(x => x != parent))
+			{
+				dfs(child, p, value);
+			}
+		}
+		
+		dfs(0, -1, 0);
+
+		foreach (var t in tree)
+		{
+			Wl(t);
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"6 2
+1 2
+1 3
+2 4
+3 6
+2 5
+1 10
+1 10
 ";
 
 		private int _index = 0;

@@ -21,25 +21,41 @@ using System.Xml.XPath;
 
 static class Program
 {
+	public static int GetOppsite(int x)
+	{
+		switch (x)
+		{
+			case 1:
+				return 6;
+			case 2:
+				return 5;
+			case 3:
+				return 4;
+			case 4:
+				return 3;
+			case 5:
+				return 2;
+			case 6:
+				return 1;
+		}
+		return 0;
+	}
+	
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
 
-		Wl();
+		Wl(inp.Select(x => GetOppsite(x)).Sum());
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"5 6 4
 ";
 
 		private int _index = 0;
@@ -288,11 +304,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public static IEnumerable<int> Ie(int start, int count)

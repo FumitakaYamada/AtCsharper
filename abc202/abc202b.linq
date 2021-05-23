@@ -25,21 +25,34 @@ static class Program
 	{
 		var inputter = new Inputter();
 		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		
+		var l = new List<char>();
+		
+		foreach (var c in s.ToCharArray().Reverse())
+		{
+			var nc = c;
+			if (c.Equals('9'))
+			{
+				nc = '6';
+			}
+			else if (c.Equals('6'))
+			{
+				nc = '9';
+			}
+			
+			l.Add(nc);
+		}
 
-		Wl();
+		Wl(new String(l.ToArray()));
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"01010
 ";
 
 		private int _index = 0;
@@ -288,11 +301,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public static IEnumerable<int> Ie(int start, int count)

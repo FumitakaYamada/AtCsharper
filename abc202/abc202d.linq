@@ -24,22 +24,117 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var a = (int)inp[0];
+		var b = (int)inp[1];
+		var k = inp[2];
+		
+		//var total = nCk(a + b, a);
+		
+		//var l = new List<char>();
+		
+		//foreach (var i in Ie(a + b))
+		//{
+		//	if (
+		//}
+		
+		//var nl = new List<long>();
+		//
+		//foreach (var i in Ie(0, a + 1))
+		//{
+		//	var nck = nCk(b + i, i);
+		//	
+		//	nl.Add(nck);
+		//}
+		//
+		//nl.Reverse();
+		//
+		//foreach (var i in nl)
+		//{
+		//	if (k >= i)
+		//	{
+		//		
+		//	}
+		//	
+		//}
 
-		Wl();
+		int[] dfs(int aa, int bb, long kk)
+		{
+			if (aa == 0)
+			{
+				return Ie(bb).Select(x => 1).ToArray();
+			}
+
+			if (bb == 0)
+			{
+				return Ie(aa).Select(x => 0).ToArray();
+			}
+
+			if (aa == 1)
+			{
+				var nck = nCk(bb + 1, 1);
+
+
+				var list = Ie((int)kk).Select(x => 1).ToList();
+				list.Add(0);
+				list.AddRange(Ie((int)nck - (int)kk - 1).Select(x => 1));
+				return list.ToArray();
+			}
+
+			if (bb == 1)
+			{
+				var nck = nCk(aa + 1, 1);
+
+				var list = Ie((int)kk- 1).Select(x => 0).ToList();
+				list.Add(1);
+				list.AddRange(Ie((int)nck - (int)kk ).Select(x => 0));
+				return list.ToArray();
+			}
+
+			var nl = new List<long>();
+
+			foreach (var i in Ie(0, aa))
+			{
+				var nck = nCk(bb + i, i);
+
+				nl.Add(nck);
+			}
+
+			nl.Reverse();
+			
+			var index = 1;
+			foreach (var i in nl)
+			{
+				//if (kk == i)
+				//{
+				//	var list = Ie(index).Select(x => 1).ToList();
+				//	list.AddRange(Ie(aa).Select(x => 0));
+				//	list.AddRange(Ie(bb-index).Select(x => 1));
+				//}
+				
+				if (kk >= i)
+				{
+					var list = Ie(index).Select(x => 1).ToList();
+					list.AddRange(dfs(aa, bb - index, kk - i));
+					return list.ToArray();
+				}
+				index ++;
+			}
+			return new int[0];
+		}
+
+		var ca = dfs(a, b, k).Select(x => x == 1 ? 'b' : 'a').ToArray();
+		var str = new String(ca);
+		Wl(str);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"2 2 4
 ";
 
 		private int _index = 0;
@@ -288,11 +383,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public static IEnumerable<int> Ie(int start, int count)

@@ -24,22 +24,24 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var n = inp[0];
+		var k = inp[1];
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
+		
+		var gcd = a.GetGcd();
 
-		Wl();
+		Wl((k <= a.Max() && k % gcd == 0) ? "POSSIBLE" : "IMPOSSIBLE");
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"5 12
+10 2 8 6 4
 ";
 
 		private int _index = 0;

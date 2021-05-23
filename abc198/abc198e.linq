@@ -24,11 +24,15 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var c = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		var l = new List<int[]>();
+		
+		foreach (var i in Ie(n - 1))
+		{
+			l.Add(inputter.GetNext().Split().Select(ToInt).ToArray());
+		}
 
 		Wl();
 	}
@@ -288,11 +292,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public static IEnumerable<int> Ie(int start, int count)

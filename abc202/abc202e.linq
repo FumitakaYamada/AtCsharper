@@ -24,22 +24,72 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var p = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		var dic = new Dictionary<int, int[]>();
+		
+		var childs = new Dictionary<int, List<int>>();
 
-		Wl();
+		void dfs(int point, int[] path)
+		{
+			childs.Add(point, new List<int> { point });
+			foreach (var parent in path)
+			{
+				if (!childs.ContainsKey(parent))
+				{
+					childs.Add(parent, new List<int> { point });
+				}
+				else
+				{
+					childs[parent].Add(point);
+				}
+			}
+			
+			path = path.Concat(new int[] { point }).ToArray();
+			dic.Add(point, path);
+			
+			foreach (var child in p.Select((x, i) => new P(x, i)).Where(x => x.X - 1 == point))
+			{
+				dfs(child.Y + 1, path);
+			}
+		}
+
+		dfs(0, new int[] {});
+		
+		var q = inputter.GetNext().ToInt();
+		
+		foreach (var i in Ie(q))
+		{
+			var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
+			var u = inp[0];
+			var d = inp[1];
+			
+			if (dic[u - 1].Count() - 1 > d || !childs.ContainsKey(u - 1))
+			{
+				Wl(0);
+				continue;
+			}
+			
+			var count = childs[u - 1].Select(x => dic[x]).Count(x => x.Count() - 1 == d);
+			
+			Wl(count);
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"7
+1 1 2 2 4 2
+4
+1 2
+7 2
+4 1
+5 5
 ";
 
 		private int _index = 0;
@@ -288,11 +338,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public static IEnumerable<int> Ie(int start, int count)

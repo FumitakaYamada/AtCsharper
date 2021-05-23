@@ -24,22 +24,103 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var h = inp[0];
+		var w = inp[1];
+		var l = new List<char[]>();
+		
+		foreach (var i in Ie(h))
+		{
+			l.Add(inputter.GetNext().ToCharArray());
+		}
+		
+		var nc = h + w - 1;
+		var min = Math.Min(h, w);
+		
+		var hb = h > w;
+		
+		var even = (h + w) % 2 == 0;
+		
+		var nl = new List<char[]>();
+		
+		foreach (var i in Ie(nc))
+		{
+			var cl = new List<char>();
 
-		Wl();
+			foreach (var j in Ie(nc))
+			{
+				var x = i-j;
+				var y = j;
+
+				if (0 <= x && x < h && 0 <= y && y < w)
+				{
+					//x.Dump();
+					//y.Dump();
+					cl.Add(l[x][y]);
+				}
+				
+			}
+			nl.Add(cl.ToArray());
+		}
+		
+		var colorList = new List<long>();
+		
+		foreach (var line in nl)
+		{
+			var num = 0; // 1 = b, 2 = r
+			foreach (var c in line)
+			{
+				if (num != 0)
+				{
+					if (num == 1 && c.Equals('R'))
+					{
+						Wl(0);
+						return;
+					}
+					if (num == 2 && c.Equals('B'))
+					{
+						Wl(0);
+						return;
+					}
+					continue;
+				}
+
+				if (c.Equals('B'))
+				{
+					num = 1;
+					continue;
+				}
+
+				if (c.Equals('R'))
+				{
+					num = 2;
+					continue;
+				}
+			}
+			colorList.Add(num);
+		}
+		
+		var sum = 1L;
+		
+		foreach (var i in colorList.Where(x => x == 0))
+		{
+			sum = sum * 2 % M;
+		}
+		
+		Wl(sum);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3 3
+B....
+.R..R
+.R..B
+.....
 ";
 
 		private int _index = 0;
@@ -71,7 +152,7 @@ static class Program
 		}
 	}
 
-	const int M = 1000000007;
+	const int M = 998244353;
 
 	static int[] sosuu = new int[] {
 	2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,
@@ -288,11 +369,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public static IEnumerable<int> Ie(int start, int count)
