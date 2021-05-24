@@ -24,22 +24,36 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-
-		Wl();
+		
+		//n = 1000;
+		
+		var l = new List<long>();
+		
+		foreach (var i in Ie(1, n))
+		{
+			l.AddRange(GetPrimeFactors(i).ToArray());
+		}
+		
+		var counts = l.GroupBy(x => x).Select(x => x.Count() + 1).ToArray();
+	
+		var sum = 1L;
+		
+		foreach (var i in counts)
+		{
+			sum = (sum * i) % M;
+		}
+		
+		Wl(sum);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"1
 ";
 
 		private int _index = 0;

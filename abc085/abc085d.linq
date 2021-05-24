@@ -24,22 +24,52 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var n = inp[0];
+		var h = inp[1];
 
-		Wl();
+		var l = new List<int[]>();
+		foreach (var i in Ie(n))
+		{
+			l.Add(inputter.GetNext().Split().Select(ToInt).ToArray());
+		}
+		
+		var cutMax = l.Select(x => x[0]).Max();
+		var throwable = l.Select(x => x[1]).Where(x => x > cutMax).ToArray();
+		var sum = throwable.LongSum();
+
+		var cutCount = Math.Ceiling((h - sum) / (double)cutMax);
+
+		if (cutCount > 0)
+		{
+			Wl(cutCount + throwable.Length);
+			return;
+		}
+		
+		var throwCount = 0;
+		foreach (var t in throwable.OrderByDescending(x => x))
+		{
+			throwCount++;
+			
+			h -= t;
+			
+			if (h <= 0)
+			{
+				Wl(throwCount);
+				return;
+			}
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"1 10
+3 5
+
 ";
 
 		private int _index = 0;
@@ -128,20 +158,20 @@ static class Program
 		}
 		return x;
 	}
-
-	public static string ToSpaceString<T>(this IEnumerable<T> ie)
-	{
-		return String.Join(' ', ie.ToArray());
-	}
-
+	
 	public static IEnumerable<long> ToLong(this IEnumerable<int> ie)
 	{
 		return ie.Select(x => (long)x);
 	}
-	
+
 	public static long LongSum(this IEnumerable<int> ie)
 	{
 		return ie.ToLong().Sum();
+	}
+
+	public static string ToSpaceString<T>(this IEnumerable<T> ie)
+	{
+		return String.Join(' ', ie.ToArray());
 	}
 
 	public static void Wl(object obj = null)

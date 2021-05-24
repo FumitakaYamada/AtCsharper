@@ -24,22 +24,38 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-
-		Wl();
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		var b = new long[100100];
+		
+		var negative = false;
+		var value = 0;
+		
+		foreach (var i in Ie(n))
+		{
+			value += (a[i] * (negative ? -1 : 1));
+			negative = !negative;
+		}
+		
+		b[0] = value;
+		
+		foreach (var i in Ie(n - 1))
+		{
+			b[i + 1] = 2 * a[i] - b[i];
+		}
+		
+		Wl(b.Take(n).ToSpaceString());
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3
+1000000000 1000000000 0
 ";
 
 		private int _index = 0;
@@ -128,20 +144,10 @@ static class Program
 		}
 		return x;
 	}
-
+	
 	public static string ToSpaceString<T>(this IEnumerable<T> ie)
 	{
 		return String.Join(' ', ie.ToArray());
-	}
-
-	public static IEnumerable<long> ToLong(this IEnumerable<int> ie)
-	{
-		return ie.Select(x => (long)x);
-	}
-	
-	public static long LongSum(this IEnumerable<int> ie)
-	{
-		return ie.ToLong().Sum();
 	}
 
 	public static void Wl(object obj = null)

@@ -24,22 +24,60 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		for (var i = 0; i < 1000; i++)
+		{
+			Query(inputter);
+			
+			var score = inputter.GetNext();
+		}
+	}
 
-		Wl();
+	static void Query(Inputter inputter)
+	{
+		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
+		var si = inp[0];
+		var sj = inp[1];
+		var ti = inp[2];
+		var tj = inp[3];
+
+		var result = "";
+
+		var tate = ti - si;
+		var yoko = tj - sj;
+
+		if (tate > 0)
+		{
+			result += new String('D', tate);
+		}
+		else if (tate < 0)
+		{
+			result += new String('U', -tate);
+		}
+
+		if (yoko > 0)
+		{
+			result += new String('R', yoko);
+		}
+		else if (yoko < 0)
+		{
+			result += new String('L', -yoko);
+		}
+
+		var rand = new Random();
+
+		Wl(new String(result.ToCharArray().OrderBy(x => rand.Next()).ToArray()));
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3 19 16 17
+234234234
+3 19 16 17
+234234234
 ";
 
 		private int _index = 0;

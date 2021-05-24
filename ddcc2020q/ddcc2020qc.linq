@@ -24,22 +24,107 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var h = inp[0];
+		var w = inp[1];
+		var k = inp[2];
 
-		Wl();
+		var cake = new bool[300, 300];
+
+		foreach (var i in Ie(h))
+		{
+			var line = inputter.GetNext().ToCharArray().Select(x => x.Equals('#')).ToArray();
+			foreach (var j in Ie(w))
+			{
+				cake[i,j] = line[j];
+			}
+		}
+		
+		var result = new List<int[]>();
+		
+		var id = 0;
+		
+		var noneLine = 0;
+		
+		foreach (var i in Ie(h))
+		{
+			var rl = new List<int>();
+			
+			var none = true;
+			var lastEmpty = 0;
+			foreach (var j in Ie(w))
+			{
+				if (cake[i,j])
+				{
+					none = false;
+					id++;
+
+					if (lastEmpty == 0)
+					{
+						rl.AddRange(Ie(j - lastEmpty + 1).Select(x => id));
+						lastEmpty = j + 1;
+					}
+					else
+					{
+						rl.Add(id);
+					}
+				}
+				else
+				{
+					if (rl.Any())
+					{
+						rl.Add(rl.Last());
+					}
+				}
+			}
+			
+			if (!none)
+			{
+				foreach (var j in Ie(1 + noneLine))
+				{
+					result.Add(rl.ToArray());
+				}
+				noneLine = 0;
+			}
+			else
+			{
+				if (result.Any())
+				{
+					result.Add(result.Last());
+				}
+				else
+				{
+					noneLine++;
+				}
+			}
+		}
+		
+		foreach (var r in result)
+		{
+			Wl(r.ToSpaceString());
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"13 21 106
+.....................
+.####.####.####.####.
+..#.#..#.#.#....#....
+..#.#..#.#.#....#....
+..#.#..#.#.#....#....
+.####.####.####.####.
+.....................
+.####.####.####.####.
+....#.#..#....#.#..#.
+.####.#..#.####.#..#.
+.#....#..#.#....#..#.
+.####.####.####.####.
+.....................
 ";
 
 		private int _index = 0;

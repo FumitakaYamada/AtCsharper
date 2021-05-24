@@ -24,22 +24,20 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-
-		Wl();
+		var n = inputter.GetNext().ToLong();
+		
+		var tens = (long)Math.Pow(10, 9);
+		
+		Wl("0 0 1 " + tens + " " + ((n - 1) / tens + 1) + " " + (((n - 1) / tens + 1) * tens - n));
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"311114770564041497
 ";
 
 		private int _index = 0;

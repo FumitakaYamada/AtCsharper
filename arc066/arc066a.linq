@@ -24,22 +24,50 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		var even = n % 2 == 0;
+		
+		if (even && a.Any(x => x % 2 == 0))
+		{
+			Wl(0);
+			return;
+		}
+		
+		if (!even && (a.Any(x => x % 2 == 1) || a.Count(x => x == 0) != 1))
+		{
+			Wl(0);
+			return;
+		}
+		
+		var dic = a.Where(x => x != 0).GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+		
+		if (dic.Any(x => x.Value != 2))
+		{
+			Wl(0);
+			return;
+		}
+		
+		var pattern = 1L;
+		
+		foreach (var i in dic)
+		{
+			pattern = (pattern * 2) % M;
+		}
 
-		Wl();
+		Wl(pattern);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"5
+2 4 4 0 2
+
 ";
 
 		private int _index = 0;
@@ -128,20 +156,10 @@ static class Program
 		}
 		return x;
 	}
-
+	
 	public static string ToSpaceString<T>(this IEnumerable<T> ie)
 	{
 		return String.Join(' ', ie.ToArray());
-	}
-
-	public static IEnumerable<long> ToLong(this IEnumerable<int> ie)
-	{
-		return ie.Select(x => (long)x);
-	}
-	
-	public static long LongSum(this IEnumerable<int> ie)
-	{
-		return ie.ToLong().Sum();
 	}
 
 	public static void Wl(object obj = null)
