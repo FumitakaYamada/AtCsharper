@@ -18,28 +18,38 @@ using System.Transactions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using System.Threading.Tasks;
 
 static class Program
 {
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var n = inp[0];
+		var k = inp[1];
+		
+		var sum = 0L;
 
-		Wl();
+		if (k % 2 == 0 && k / 2 <= n)
+		{
+			var count = (n - k / 2L) / k + 1;
+			
+			sum += (long)Math.Pow(count, 3);
+		}
+
+		sum += (long)Math.Pow(n / k, 3);
+		
+		Wl(sum);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"99999 199998
 ";
 
 		private int _index = 0;

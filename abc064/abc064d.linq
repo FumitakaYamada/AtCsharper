@@ -24,22 +24,40 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var s = inputter.GetNext();
+		
+		var ol = s.ToCharArray().Select(x => x.Equals('(')).ToArray();
+		
+		var count = 0;
+		var diff = 0;
+		foreach (var f in ol.Reverse())
+		{
+			if (f)
+			{
+				diff --;
+				count = Math.Max(0, count - 1);
+			}
+			else
+			{
+				diff ++;
+				count++;
+			}
+		}
+		
+		s = new String(Enumerable.Repeat('(', count).ToArray()) + s + new String(Enumerable.Repeat(')', count - diff).ToArray());
 
-		Wl();
+		Wl(s);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"6
+)))())
 ";
 
 		private int _index = 0;

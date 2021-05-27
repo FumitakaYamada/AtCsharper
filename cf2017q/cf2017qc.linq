@@ -24,22 +24,100 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		
+		var ca = inputter.GetNext().ToCharArray();
 
-		Wl();
+		//ca = Enumerable.Repeat("xx", 50000000).SelectMany(x => x.ToCharArray()).Concat("dxd".ToCharArray()).ToArray();
+
+		var bl = new List<bool>();
+		var nx = new List<char>();
+
+		foreach (var c in ca)
+		{
+			if (c.Equals('x'))
+			{
+				bl.Add(true);
+			}
+			else
+			{
+				bl.Add(false);
+				nx.Add(c);
+			}
+		}
+		
+		var nxCount = nx.Count();
+		
+		if (!new String(nx.Take(nxCount / 2).ToArray()).Equals(new String(nx.Skip((int)Math.Ceiling(nxCount / 2f)).Reverse().ToArray())))
+		{
+			Wl(-1);
+			return;
+		}
+		
+		if (nxCount == 0)
+		{
+			Wl(0);
+			return;
+		}
+
+		var nxCenter = (int)Math.Ceiling(nxCount / 2f);
+
+		var zCount = new List<int>();
+		var kCount = new List<int>();
+		var nxc = 0;
+		
+		var lastNxcIndex = 0;
+		foreach (var i in Ie(ca.Length))
+		{
+			if (!bl[i])
+			{
+				nxc++;
+				zCount.Add(i - lastNxcIndex);
+				lastNxcIndex = i + 1;
+
+				if (nxc == nxCenter)
+				{
+					break;
+				}
+			}
+		}
+		
+		nxc = 0;
+		lastNxcIndex = 0;
+		
+		foreach (var i in Ie(ca.Length))
+		{
+			if (!bl[ca.Length - i - 1])
+			{
+				nxc++;
+				kCount.Add(i - lastNxcIndex);
+				lastNxcIndex = i + 1;
+
+				if (nxc == nxCenter)
+				{
+					break;
+				}
+			}
+		}
+		//
+		//zCount.Dump();
+		//kCount.Dump();
+		//
+		var count = 0;
+		foreach (var i in Ie(zCount.Count()))
+		{
+			count += Math.Abs(zCount[i] - kCount[i]);
+		}
+
+		Wl(count);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"xoxxo
 ";
 
 		private int _index = 0;

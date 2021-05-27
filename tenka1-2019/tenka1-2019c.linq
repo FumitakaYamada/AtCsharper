@@ -24,22 +24,48 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var s = inputter.GetNext();
+		
+		var bl = s.ToCharArray().Select(x => x.Equals('#')).ToArray();
+		
+		var rightW = bl.Count(x => !x);
+		var rightB = n - rightW;
+		
+		var leftW = 0;
+		var leftB = 0;
 
-		Wl();
+		var l = new List<int>();
+		
+		l.Add(leftB + rightW);
+
+		foreach (var i in Ie(n))
+		{
+			if (bl[i])
+			{
+				leftB++;
+				rightB--;
+			}
+			else
+			{
+				leftW++;
+				rightW--;
+			}
+			
+			l.Add(leftB + rightW);
+		}
+		
+		Wl(l.Min());
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"9
+#########
 ";
 
 		private int _index = 0;
