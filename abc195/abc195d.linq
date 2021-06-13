@@ -28,37 +28,77 @@ static class Program
 		var n = inp[0];
 		var q = inp[2];
 		
-		var l = new List<(int size, int value)>();
+		var l = new List<int[]>();
 
 		foreach (var i in Ie(n))
 		{
 			var p = inputter.GetNext().Split().Select(ToInt).ToArray();
-			l.Add((p[0], p[1]));
+			l.Add(p);
 		}
 		
-		l.GroupBy(x => x.size).ToDictionary(x => x.Key, x => x.Select(x => x.value).ToArray());
-
+		var ol = l.OrderByDescending(x => x[1]).ToArray();
+		
 		var box = inputter.GetNext().Split().Select(ToInt).ToArray();
 
-		foreach (var i in Ie(q))
+		foreach (var xxxxxx in Ie(q))
 		{
 			var r = inputter.GetNext().Split().Select(ToInt).ToArray();
 			var start = r[0] - 1;
 			var end = r[1] - 1;
 			
+			var newBox = new List<int>();
 			
-		}
+			foreach (var i in Ie(box.Length))
+			{
+				if (start <= i && i <= end) continue;
+				
+				newBox.Add(box[i]);
+			}
+			
+			newBox = newBox.OrderBy(x => x).ToList();
 
-		Wl();
+			var value = 0L;
+
+			var usedBoxes = new bool[newBox.Count()];
+			var usedItems = new bool[ol.Count()];
+
+			foreach (var i in Ie(newBox.Count()))
+			{
+				foreach (var j in Ie(ol.Count()))
+				{
+					if (usedItems[j]) continue;
+					if (usedBoxes[i]) continue;
+					
+					var item = ol.Skip(j).First();
+					
+					if (newBox[i] >= item[0])
+					{
+						usedBoxes[i] = true;
+						usedItems[j] = true;
+						value += item[1];
+					}
+				}
+			}
+			
+			Wl(value);
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3 4 3
+1 9
+5 3
+7 8
+1 8 6 9
+4 4
+1 4
+1 3
+
 ";
 
 		private int _index = 0;

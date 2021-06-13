@@ -5,106 +5,44 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Transactions;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 static class Program
 {
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var n = inp[0];
-		var m = inp[1];
+		var n = inputter.GetNext().ToInt();
+		var t = inputter.GetNext().Split().Select(ToInt).ToArray();
 		
-		var l = new List<int[]>();
-
-		foreach (var i in Ie(m))
+		var dp = new int[101, 100100];
+		
+		foreach (var i in Ie(1, n))
 		{
-			var path = inputter.GetNext().Split().Select(ToInt).ToArray();
-			l.Add(new int[] {
-				path[0] - 1,
-				path[1] - 1,
-				path[2],
-				path[3],
-			});
-		}
-		
-		var pathDic = l.GroupBy(x => x[0]).ToDictionary(x => x.Key, x => x.ToArray());
-		
-		long minCost(long c, long d, long t)
-		{
-			var min = long.MaxValue;
-			foreach (var i in Ie(5))
+			foreach (var j in Ie(100100))
 			{
-				var time = Math.Max(t, Math.Floor(Math.Sqrt(d) - 2 + i));
-				min.Chmin((long)(c + (d / (time + 1)) + time));
-			}
-			return min;
-		}
-		
-		var fixedPoints = new Dictionary<long, long>();
-		
-		var queue = new PriorityQueue<long, long[]>(x => x[1], isDescending: false);
-		
-		queue.Enqueue(new long[] { 0, 0 });
-		
-		while (queue.Any())
-		{
-			var min = queue.Dequeue();
-			var point = (int)min[0];
-			var time = min[1];
-			
-			if (fixedPoints.ContainsKey(point)) continue;
-			
-			fixedPoints.Add(point, time);
-			
-			if (point == n - 1) break;
-
-			if (!pathDic.ContainsKey(point)) continue;
-			
-			foreach (var canMove in pathDic[point])
-			{
-				var movement = canMove[1];
-
-				if (fixedPoints.ContainsKey(movement)) continue;
-
-				queue.Enqueue(new long[] { movement, minCost(canMove[2], canMove[3], time) });
+				dp[i, j] = (t[i - 1] <= j) ? Math.Max(dp[i - 1, j - t[i - 1]] + t[i - 1], dp[i - 1, j]) : 
+				dp[i - 1, j];
 			}
 		}
 		
-		//fixedPoints.Dump();
+		var sum = t.Sum();
 
-		Wl(fixedPoints.ContainsKey(n - 1) ? fixedPoints[n - 1] : -1);
+		Wl(sum - dp[n, sum / 2]);
 	}
 
 	public class Inputter
 	{
-		//bool IsDebug { get; } = true;
+		//public bool IsDebug { get; } = true;
 		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"6 9
-1 1 0 0
-1 3 1 2
-1 5 2 3
-5 2 16 5
-2 6 1 10
-3 4 3 4
-3 5 3 10
-5 6 1 100
-4 2 0 110
+	$@"9
+3 14 15 9 26 5 35 89 79
 
 ";
 
@@ -211,9 +149,6 @@ static class Program
 	{
 		return (num == 0) ? 1 : ((long)Math.Log10(num) + 1);
 	}
-	
-	static bool Chmax<T>(this ref T lhs, T rhs) where T : struct, IComparable<T> { if (lhs.CompareTo(rhs) < 0) { lhs = rhs; return true; } return false; }
-	static bool Chmin<T>(this ref T lhs, T rhs) where T : struct, IComparable<T> { if (lhs.CompareTo(rhs) > 0) { lhs = rhs; return true; } return false; }
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)

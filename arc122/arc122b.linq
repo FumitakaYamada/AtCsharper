@@ -5,106 +5,46 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Transactions;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 static class Program
 {
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var n = inp[0];
-		var m = inp[1];
+		var n = inputter.GetNext().ToInt();
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
 		
-		var l = new List<int[]>();
+		var oa = a.OrderBy(x => x).ToArray();
+		
+		var mid = oa[(int)Math.Ceiling(a.Length / 2f) - 1];
+		
+		var xx = mid / 2d;
 
-		foreach (var i in Ie(m))
+		double lost(int amount)
 		{
-			var path = inputter.GetNext().Split().Select(ToInt).ToArray();
-			l.Add(new int[] {
-				path[0] - 1,
-				path[1] - 1,
-				path[2],
-				path[3],
-			});
+			var ll = xx + amount - Math.Min(amount, 2 * xx);
+			
+			return ll;
 		}
 		
-		var pathDic = l.GroupBy(x => x[0]).ToDictionary(x => x.Key, x => x.ToArray());
-		
-		long minCost(long c, long d, long t)
-		{
-			var min = long.MaxValue;
-			foreach (var i in Ie(5))
-			{
-				var time = Math.Max(t, Math.Floor(Math.Sqrt(d) - 2 + i));
-				min.Chmin((long)(c + (d / (time + 1)) + time));
-			}
-			return min;
-		}
-		
-		var fixedPoints = new Dictionary<long, long>();
-		
-		var queue = new PriorityQueue<long, long[]>(x => x[1], isDescending: false);
-		
-		queue.Enqueue(new long[] { 0, 0 });
-		
-		while (queue.Any())
-		{
-			var min = queue.Dequeue();
-			var point = (int)min[0];
-			var time = min[1];
-			
-			if (fixedPoints.ContainsKey(point)) continue;
-			
-			fixedPoints.Add(point, time);
-			
-			if (point == n - 1) break;
+		var totalLostExpect = oa.Select(x => lost(x)).Sum() * 1d / oa.Length;
 
-			if (!pathDic.ContainsKey(point)) continue;
-			
-			foreach (var canMove in pathDic[point])
-			{
-				var movement = canMove[1];
-
-				if (fixedPoints.ContainsKey(movement)) continue;
-
-				queue.Enqueue(new long[] { movement, minCost(canMove[2], canMove[3], time) });
-			}
-		}
-		
-		//fixedPoints.Dump();
-
-		Wl(fixedPoints.ContainsKey(n - 1) ? fixedPoints[n - 1] : -1);
+		Wl(totalLostExpect);
 	}
 
 	public class Inputter
 	{
-		//bool IsDebug { get; } = true;
+		//public bool IsDebug { get; } = true;
 		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"6 9
-1 1 0 0
-1 3 1 2
-1 5 2 3
-5 2 16 5
-2 6 1 10
-3 4 3 4
-3 5 3 10
-5 6 1 100
-4 2 0 110
+	$@"10
+866111664 178537096 844917655 218662351 383133839 231371336 353498483 865935868 472381277 579910117
 
 ";
 
@@ -167,53 +107,18 @@ static class Program
 		return x;
 	}
 
-	public static string ToSpaceString<T>(this IEnumerable<T> ie)
-	{
-		return String.Join(' ', ie.ToArray());
-	}
-
-	public static IEnumerable<long> ToLong(this IEnumerable<int> ie)
-	{
-		return ie.Select(x => (long)x);
-	}
-	
-	public static long LongSum(this IEnumerable<int> ie)
-	{
-		return ie.ToLong().Sum();
-	}
-
-	public static void Wl(object obj = null)
-	{
-		Console.WriteLine(obj);
-	}
-
-	public static long ToLong(this string str)
-	{
-		return long.Parse(str);
-	}
-
-	public static int ToInt(this string str)
-	{
-		return int.Parse(str);
-	}
-
-	public static int ToInt(this char ch)
-	{
-		return int.Parse(ch.ToString());
-	}
-
-	public static double ToDouble(this string str)
-	{
-		return double.Parse(str);
-	}
-
-	public static long GetDigit(this long num)
-	{
-		return (num == 0) ? 1 : ((long)Math.Log10(num) + 1);
-	}
-	
-	static bool Chmax<T>(this ref T lhs, T rhs) where T : struct, IComparable<T> { if (lhs.CompareTo(rhs) < 0) { lhs = rhs; return true; } return false; }
-	static bool Chmin<T>(this ref T lhs, T rhs) where T : struct, IComparable<T> { if (lhs.CompareTo(rhs) > 0) { lhs = rhs; return true; } return false; }
+	public static string ToSpaceString<T>(this IEnumerable<T> ie) => String.Join(' ', ie.ToArray());
+	public static IEnumerable<long> ToLong(this IEnumerable<int> ie) => ie.Select(x => (long)x);
+	public static long LongSum(this IEnumerable<int> ie) => ie.ToLong().Sum();
+	public static void Wl(object obj = null) => Console.WriteLine(obj);
+	public static long ToLong(this string str) => long.Parse(str);
+	public static int ToInt(this string str) => int.Parse(str);
+	public static long ToLong(this char ch) => long.Parse(ch.ToString());
+	public static int ToInt(this char ch) => int.Parse(ch.ToString());
+	public static double ToDouble(this string str) => double.Parse(str);
+	public static long GetDigit(this long num) => (num == 0) ? 1 : ((long)Math.Log10(num) + 1);
+	public static IEnumerable<int> Ie(long start, long count) => Enumerable.Range((int)start, (int)count);
+	public static IEnumerable<int> Ie(long count) => Ie(0, count);
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)
@@ -268,22 +173,6 @@ static class Program
 		var c = a;
 		a = b;
 		b = c;
-	}
-
-	public static void rep(int count, Action<int> action)
-	{
-		for (var i = 0; i < count; i++)
-		{
-			action(i);
-		}
-	}
-
-	public static void rep(int count, Func<int, bool> action)
-	{
-		for (var i = 0; i < count; i++)
-		{
-			if (!action(i)) break;
-		}
 	}
 
 	public static string ToBitString(this int num)
@@ -349,16 +238,6 @@ static class Program
 	static long GetGcd(this IEnumerable<long> numbers)
 	{
 		return numbers.Aggregate(GetGcd);
-	}
-
-	public static IEnumerable<int> Ie(int start, int count)
-	{
-		return Enumerable.Range(start, count);
-	}
-
-	public static IEnumerable<int> Ie(int count)
-	{
-		return Enumerable.Range(0, count);
 	}
 
 	public class LP
