@@ -16,13 +16,54 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var n = inp[0];
+		var q = inp[1];
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
+		
+		var dic = new Dictionary<long, long>();
+		
+		var count = 0;
+		foreach (var i in Ie(n))
+		{
+			count++;
 
-		Wl();
+			var amount = a[i];
+			var done = false;
+
+			while (!done)
+			{
+				var nextDiff = a.Count(x => x <= amount + count);
+				if (nextDiff != count)
+				{
+					count = nextDiff;
+					continue;
+				}
+				done = true;
+			}
+
+			dic.Add(amount, amount + count);
+		}
+		
+		dic.Dump();
+		
+		foreach (var i in Ie(q))
+		{
+			var kk = inputter.GetNext().ToInt();
+
+			var smaller = dic.Where(x => x.Key <= kk).ToArray();
+
+			var min = smaller.MaxBy(x => x.Key);
+			
+			if (min == null)
+			{
+				Wl(kk);
+			}
+			
+			var diff = kk - min.First().Key;
+
+			Wl(min.First().Value + diff);
+		}
 	}
 
 	public class Inputter
@@ -31,7 +72,11 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3 2
+3 7 8
+6
+7
+
 ";
 
 		private int _index = 0;
@@ -108,7 +153,6 @@ static class Program
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
 	public static string ToString(this char[] ca) => new String(ca);
-	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)

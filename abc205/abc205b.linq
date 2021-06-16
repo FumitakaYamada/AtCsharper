@@ -16,22 +16,31 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		var success = true;
+		
+		foreach (var i in Ie(1, n))
+		{
+			if (!a.Contains(i))
+			{
+				success = false;
+			}
+		}
 
-		Wl();
+		Wl(success ? "Yes" : "No");
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"1
+1
+
 ";
 
 		private int _index = 0;
@@ -108,7 +117,6 @@ static class Program
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
 	public static string ToString(this char[] ca) => new String(ca);
-	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)

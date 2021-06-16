@@ -16,22 +16,46 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var n = inp[0];
+		var k = inp[1];
 
-		Wl();
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+
+		var dp = new bool[k + 1];
+		
+		foreach (var i in a)
+		{
+			dp[i] = true;
+		}
+		
+		foreach(var i in Ie(1, k))
+		{
+			foreach (var j in a)
+			{
+				var index = i - j;
+				if (index < 0) continue;
+
+				if (!dp[index])
+				{
+					dp[i] = true;
+					break;
+				}
+			}
+		}
+
+		Wl(dp[k] ? "First" : "Second");
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"1 100000
+1
+
 ";
 
 		private int _index = 0;

@@ -16,22 +16,54 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var n = inp[0];
+		var m = inp[1];
 
-		Wl();
+		var l = new List<int[]>();
+
+		foreach (var i in Ie(m))
+		{
+			var path = inputter.GetNext().Split().Select(ToInt).Select(x => x - 1).ToArray();
+			l.Add(path);
+		}
+		
+		var dic = l.GroupBy(x => x[0]).ToDictionary(x => x.Key, x => x.Select(x => x[1]).ToArray());
+
+		var depth = new Dictionary<int, int>();
+		
+		int GetDepth(int point)
+		{
+			if (depth.ContainsKey(point)) return depth[point];
+			
+			if (!dic.ContainsKey(point)) return 0;
+			
+			var max = dic[point].Select(GetDepth).Select(x => x + 1).Max();
+			
+			depth[point] = max;
+			
+			return max;
+		}
+
+		Wl(Ie(n).Select(GetDepth).Max());
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"5 8
+5 3
+2 3
+2 4
+5 2
+5 1
+1 4
+4 3
+1 3
+
 ";
 
 		private int _index = 0;
@@ -108,7 +140,6 @@ static class Program
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
 	public static string ToString(this char[] ca) => new String(ca);
-	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)

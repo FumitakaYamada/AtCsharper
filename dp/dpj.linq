@@ -16,13 +16,32 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
 
-		Wl();
+		var dp = new double[n + 1, n + 1, n + 1];
+		
+		var sum = a.Length;
+
+		double GetExpect(int one, int two, int three)
+		{
+			if (one == 0 && two == 0 && three == 0) return 0;
+			if (dp[one, two, three] != 0) return dp[one, two, three];
+
+			var expect = 1 / (1 - (sum - one - two - three) * 1d / sum);
+
+			if (one > 0) expect += (GetExpect(one - 1, two, three) + 1)  * (one / sum) / (1 - (sum - one - two - three) * 1d / sum);
+			if (two > 0) expect += (GetExpect(one + 1, two - 1, three) + 1)  * (two / sum) / (1 - (sum - one - two - three) * 1d / sum);
+			if (three > 0) expect += (GetExpect(one, two + 1, three - 1) + 1)  * (three / sum) / (1 - (sum - one - two - three) * 1d / sum);
+
+			return expect;
+		}
+		
+		var dic = a.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+
+		var expect = GetExpect(dic.TryGet(1), dic.TryGet(2), dic.TryGet(3));
+		
+		Wl(expect);
 	}
 
 	public class Inputter
@@ -31,7 +50,9 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"1
+3
+
 ";
 
 		private int _index = 0;

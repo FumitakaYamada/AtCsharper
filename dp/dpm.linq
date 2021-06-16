@@ -16,11 +16,20 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var n = inp[0];
+		var k = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+
+		var dp = new int[n + 1, k];
+		
+		foreach (var i in Ie(1, n))
+		{
+			foreach (var j in Ie(k))
+			{
+				dp[i, j] = dp[i - 1, j - 
+			}
+		}
 
 		Wl();
 	}
@@ -31,7 +40,9 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3 4
+1 2 3
+
 ";
 
 		private int _index = 0;

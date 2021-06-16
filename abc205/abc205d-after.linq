@@ -16,23 +16,69 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var n = inp[0];
+		var q = inp[1];
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
+		
+		var dic = new Dictionary<long, long>();
+		
+		dic.Add(0, 0);
+		
+		foreach (var aa in a)
+		{
+			dic.Add(aa, aa - a.Count(x => x <= aa));
+		}
+		
+		foreach (var i in Ie(q))
+		{
+			var kk = inputter.GetNext().ToInt();
+			
+			if (kk > dic.Last().Value)
+			{
+				Wl(kk + a.Count());
+				continue;
+			}
 
-		Wl();
+			var ac = 0;
+			var wc = dic.Count();
+			
+			while (ac + 1 < wc)
+			{
+				var wj = (ac + wc) / 2;
+
+				var next = dic.Skip(wj).First();
+				var prev = dic.Skip(wj - 1).First();
+				
+				if (prev.Value < kk) ac = wj;
+				else wc = wj;
+			}
+			
+			var nextt = dic.Skip(ac).First();
+			
+			Wl(kk - nextt.Value + nextt.Key - 1);
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"5 2
+1 2 3 4 5
+1
+10
+
+
 ";
+		//	$@"3 2
+//3 6 7
+//5
+//6
+//
+//";
 
 		private int _index = 0;
 		private string[] lines = null;
@@ -108,7 +154,6 @@ static class Program
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
 	public static string ToString(this char[] ca) => new String(ca);
-	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)

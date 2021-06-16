@@ -16,22 +16,36 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
 		var a = inp[0];
 		var b = inp[1];
-
-		Wl();
+		var c = inp[2];
+		
+		if (c % 2 == 0)
+		{
+			var aa = Math.Abs(a);
+			var bb = Math.Abs(b);
+			
+			if (aa < bb) Wl("<");
+			else if (aa > bb) Wl(">");
+			else if (aa == bb) Wl("=");
+		}
+		else
+		{
+			if (a < b) Wl("<");
+			else if (a > b) Wl(">");
+			else if (a == b) Wl("=");
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3 2 4
+
 ";
 
 		private int _index = 0;
@@ -108,7 +122,6 @@ static class Program
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
 	public static string ToString(this char[] ca) => new String(ca);
-	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)

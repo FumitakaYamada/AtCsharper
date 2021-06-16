@@ -16,13 +16,41 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var n = inp[0];
+		var q = inp[1];
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
+		
+		//
+		//a = Ie(1, 100100100100).Select(x => (long)x).ToArray();
+		
+		var dic = new Dictionary<long, long>();
+		
+		foreach (var i in a.Reverse())
+		{
+			dic.Add(i, i + a.Count(x => x <= i));
+		}
+		
+		dic.Dump();
+		
+		foreach (var i in Ie(q))
+		{
+			var kk = inputter.GetNext().ToInt();
 
-		Wl();
+			var smaller = dic.Where(x => x.Key <= kk).ToArray();
+
+			if (smaller.Length == 0)
+			{
+				Wl(kk);
+				continue;
+			}
+
+			var min = smaller.MaxBy(x => x.Key).First();
+			
+			var diff = kk - min.Key;
+
+			Wl(min.Value + diff);
+		}
 	}
 
 	public class Inputter
@@ -31,7 +59,12 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"4 3
+3 5 6 7
+2
+5
+3
+
 ";
 
 		private int _index = 0;
@@ -108,7 +141,6 @@ static class Program
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
 	public static string ToString(this char[] ca) => new String(ca);
-	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)

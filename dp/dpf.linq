@@ -17,21 +17,58 @@ static class Program
 	{
 		var inputter = new Inputter();
 		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var t = inputter.GetNext();
+		
+		var sca = s.ToCharArray();
+		var tca = t.ToCharArray();
+		
+		var dp = new long[s.Length + 1, t.Length + 1];
+		
+		foreach (var i in Ie(1, s.Length))
+		{
+			foreach (var j in Ie(1, t.Length))
+			{
+				if (sca[i - 1].Equals(tca[j - 1])) dp[i, j] = dp[i - 1, j - 1] + 1;
+				else dp[i, j] = Math.Max(dp[i - 1, j], dp[i, j - 1]);
+			}
+		}
+		
+		var ca = new char[dp[s.Length, t.Length]];
+		
+		var si = s.Length;
+		var ti = t.Length;
+		var length = ca.Length - 1;
+		
+		while (length >= 0)
+		{
+			if (sca[si - 1].Equals(tca[ti - 1]))
+			{
+				ca[length] = sca[si - 1];
+				si--;
+				ti--;
+				length--;
+			}
+			else if (dp[si, ti] == dp[si - 1, ti])
+			{
+				si--;
+			} else
+			{
+				ti--;
+			}
+		}
 
-		Wl();
+		Wl(new String(ca));
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"abracadabra
+avadakedavra
+
 ";
 
 		private int _index = 0;
@@ -107,8 +144,6 @@ static class Program
 	public static IEnumerable<int> Ie(long count) => Ie(0, count);
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
-	public static string ToString(this char[] ca) => new String(ca);
-	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)

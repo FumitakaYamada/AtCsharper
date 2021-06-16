@@ -16,22 +16,69 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var h = inp[0];
+		var w = inp[1];
+		
+		var l = new List<int[]>();
+		
+		foreach (var i in Ie(h))
+		{
+			var ca = inputter.GetNext().ToCharArray();
+			
+			l.Add(ca.Select(x => x.Equals('.') ? 1 : 0).ToArray());
+		}
+		
+		var dp = new long[h, w];
+		
+		dp[0, 0] = 1;
+		
+		foreach (var i in Ie(h))
+		{
+			foreach (var j in Ie(w))
+			{
+				if (l[i][j] == 0) continue;
+				
+				var sum = dp[i, j];
+				
+				if (0 < i) sum += dp[i - 1, j];
+				if (0 < j) sum += dp[i, j - 1];
+				
+				dp[i, j] = sum % M;
+			}
+		}
 
-		Wl();
+		Wl(dp[h - 1, w - 1]);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"20 20
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+....................
+
 ";
 
 		private int _index = 0;
@@ -108,7 +155,6 @@ static class Program
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
 	public static string ToString(this char[] ca) => new String(ca);
-	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)

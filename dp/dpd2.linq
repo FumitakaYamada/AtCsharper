@@ -16,22 +16,49 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var n = inp[0];
+		var w = inp[1];
 
-		Wl();
+		var l = new List<long[]>();
+
+		foreach (var i in Ie(n))
+		{
+			var item = inputter.GetNext().Split().Select(ToLong).ToArray();
+			l.Add(item);
+		}
+		
+		var dp = new long[n + 1, w + 1];
+		
+		foreach (var i in Ie(1, n))
+		{
+			foreach (var j in Ie(1, w))
+			{
+				var weight = l[i - 1][0];
+				var value = l[i - 1][1];
+				
+				if (weight > j) dp[i, j] = dp[i - 1, j];
+				else dp[i, j] = Math.Max(dp[i - 1, j - weight] + value, dp[i - 1, j]);
+			}
+		}
+
+		Wl(dp[n, w]);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"6 15
+6 5
+5 6
+6 4
+6 6
+3 5
+7 2
+
 ";
 
 		private int _index = 0;
@@ -105,10 +132,6 @@ static class Program
 	public static long GetDigit(this long num) => (num == 0) ? 1 : ((long)Math.Log10(num) + 1);
 	public static IEnumerable<int> Ie(long start, long count) => Enumerable.Range((int)start, (int)count);
 	public static IEnumerable<int> Ie(long count) => Ie(0, count);
-	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
-	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
-	public static string ToString(this char[] ca) => new String(ca);
-	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)

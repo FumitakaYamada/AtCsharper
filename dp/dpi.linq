@@ -16,22 +16,45 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var p = inputter.GetNext().Split().Select(ToDouble).ToArray();
 
-		Wl();
+		var dp = new double[n + 1, n + 1];
+
+		dp[0, 0] = 1;
+		
+		foreach (var i in Ie(1, n))
+		{
+			dp[i, 0] = dp[i - 1, 0] * (1 - p[i - 1]);
+		}
+		
+		foreach (var i in Ie(1, n))
+		{
+			foreach (var j in Ie(1, n))
+			{
+				dp[i, j] = dp[i - 1, j - 1] * p[i - 1] + dp[i - 1, j] * (1 - p[i - 1]);
+			}
+		}
+		
+		var sum = 0d;
+		
+		foreach (var i in Ie(n / 2 + 1, n / 2 + 1))
+		{
+			sum += dp[n, i];
+		}
+
+		Wl(sum);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"5
+0.42 0.01 0.42 0.99 0.42
+
 ";
 
 		private int _index = 0;
@@ -108,7 +131,6 @@ static class Program
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
 	public static string ToString(this char[] ca) => new String(ca);
-	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod)

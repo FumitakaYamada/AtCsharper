@@ -16,22 +16,34 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		var dp = new long[n, n];
+		var flag = new bool[n, n];
 
-		Wl();
+		long score(int f, int l)
+		{
+			if (flag[f, l]) return dp[f, l];
+			flag[f, l] = true;
+			if (l - f == 0) return dp[f, l] = a[f];
+			return dp[f, l] = Math.Max(a[f] - score(f + 1, l), a[l] - score(f, l - 1));
+		}
+		
+		var s = score(0, n - 1);
+		
+		Wl(s);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"10
+1000000000 1 1000000000 1 1000000000 1 1000000000 1 1000000000 1
+
 ";
 
 		private int _index = 0;
