@@ -109,9 +109,10 @@ static class Program
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
 	public static string ToString(this char[] ca) => new String(ca);
 	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
+	public static void RemoveLast<T>(this List<T> list) => list.RemoveAt(list.Count() - 1);
 
 	// a ^ n mod mod
-	public static long ModPow(long a, long n, long mod)
+	public static long ModPow(long a, long n, long mod = M)
 	{
 		long res = 1;
 		while (n > 0)
@@ -126,7 +127,7 @@ static class Program
 		return res;
 	}
 
-	public static long ModInv(long a, long m)
+	public static long ModInv(long a, long m = M)
 	{
 		long b = m, u = 1, v = 0;
 		while (b > 0)

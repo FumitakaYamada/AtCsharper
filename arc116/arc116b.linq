@@ -5,19 +5,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Transactions;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 static class Program
 {
@@ -25,79 +17,32 @@ static class Program
 	{
 		var inputter = new Inputter();
 		var n = inputter.GetNext().ToInt();
+		var a = inputter.GetNext().Split().Select(ToLong).OrderBy(x => x).ToArray();
 		
-		var map = new List<Dictionary<int, bool>>();
-
-		foreach (var i in Ie(n))
+		var sum = 0L;
+		var max = 0L;
+		var count = Ie(1, n).ToDictionary(x => x, x => ModPow(2, x - 1));
+		
+		foreach (var i in Ie(1, n))
 		{
-			var a = inputter.GetNext().ToInt();
+			var num = a[i - 1];
 			
-			var l = new Dictionary<int, bool>();
-			
-			foreach (var j in Ie(a))
-			{
-				var array = inputter.GetNext().Split().Select(ToInt).ToArray();
-				
-				l[array[0] - 1] = array[1] == 1;
-			}
-			
-			map.Add(l);
+			max = (max + count[i] * num % M) % M;
 		}
 		
-		var trustList = new Dictionary<int, bool>();
-		
-		var max = 0;
-		
-		void dfs(int next)
+		foreach (var i in Ie(1, n))
 		{
-			if (next == n)
-			{
-				//{
-				//	var result2 = trustList.Count(x => x.Value);
-				//	if (result2 == 1)
-				//	{
-				//		trustList.Dump();
-				//	}
-				//}
-				
-				foreach (var i in trustList)
-				{
-					foreach (var test in map[i.Key])
-					{
-						if (trustList[test.Key] == (i.Value == test.Value))
-						{
-							continue;
-						}
-						else
-						{
-							return;
-						}
-					}
-				}
-				
-				var result = trustList.Count(x => x.Value);
-				if (result > max)
-				{
-					max = result;
-				}
-				return;
-			}
-			
-			foreach (var b in Ie(2))
-			{
-				var canTrust = b == 1;
-				
-				trustList.Add(next, canTrust);
-				
-				dfs(next + 1);
-				
-				trustList.Remove(next);
-			}
-		}
-		
-		dfs(0);
+			var num = a[i - 1];
 
-		Wl(max);
+			max = (num > max ? max - num + M : max - num) % M * ModInv(2, M) % M;
+			
+			var one = max * num % M;
+			var two = num * num % M;
+			
+			sum = (sum + one + two) % M;
+		}
+
+		Wl(sum);
 	}
 
 	public class Inputter
@@ -106,13 +51,7 @@ static class Program
 		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"2
-1
-2 0
-1
-1 0
-
-
+	$@"
 ";
 
 		private int _index = 0;
@@ -144,7 +83,7 @@ static class Program
 		}
 	}
 
-	const int M = 1000000007;
+	const int M = 998244353;
 
 	// 順列
 	static long nPk(long n, long k)
@@ -174,53 +113,25 @@ static class Program
 		return x;
 	}
 
-	public static string ToSpaceString<T>(this IEnumerable<T> ie)
-	{
-		return String.Join(' ', ie.ToArray());
-	}
-
-	public static IEnumerable<long> ToLong(this IEnumerable<int> ie)
-	{
-		return ie.Select(x => (long)x);
-	}
-	
-	public static long LongSum(this IEnumerable<int> ie)
-	{
-		return ie.ToLong().Sum();
-	}
-
-	public static void Wl(object obj = null)
-	{
-		Console.WriteLine(obj);
-	}
-
-	public static long ToLong(this string str)
-	{
-		return long.Parse(str);
-	}
-
-	public static int ToInt(this string str)
-	{
-		return int.Parse(str);
-	}
-
-	public static int ToInt(this char ch)
-	{
-		return int.Parse(ch.ToString());
-	}
-
-	public static double ToDouble(this string str)
-	{
-		return double.Parse(str);
-	}
-
-	public static long GetDigit(this long num)
-	{
-		return (num == 0) ? 1 : ((long)Math.Log10(num) + 1);
-	}
+	public static string ToSpaceString<T>(this IEnumerable<T> ie) => String.Join(' ', ie.ToArray());
+	public static IEnumerable<long> ToLong(this IEnumerable<int> ie) => ie.Select(x => (long)x);
+	public static long LongSum(this IEnumerable<int> ie) => ie.ToLong().Sum();
+	public static void Wl(object obj = null) => Console.WriteLine(obj);
+	public static long ToLong(this string str) => long.Parse(str);
+	public static int ToInt(this string str) => int.Parse(str);
+	public static long ToLong(this char ch) => long.Parse(ch.ToString());
+	public static int ToInt(this char ch) => int.Parse(ch.ToString());
+	public static double ToDouble(this string str) => double.Parse(str);
+	public static long GetDigit(this long num) => (num == 0) ? 1 : ((long)Math.Log10(num) + 1);
+	public static IEnumerable<int> Ie(long start, long count) => Enumerable.Range((int)start, (int)count);
+	public static IEnumerable<int> Ie(long count) => Ie(0, count);
+	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
+	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
+	public static string ToString(this char[] ca) => new String(ca);
+	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 
 	// a ^ n mod mod
-	public static long ModPow(long a, long n, long mod)
+	public static long ModPow(long a, long n, long mod = M)
 	{
 		long res = 1;
 		while (n > 0)
@@ -235,7 +146,7 @@ static class Program
 		return res;
 	}
 
-	public static long ModInv(long a, long m)
+	public static long ModInv(long a, long m = M)
 	{
 		long b = m, u = 1, v = 0;
 		while (b > 0)
@@ -272,22 +183,6 @@ static class Program
 		var c = a;
 		a = b;
 		b = c;
-	}
-
-	public static void rep(int count, Action<int> action)
-	{
-		for (var i = 0; i < count; i++)
-		{
-			action(i);
-		}
-	}
-
-	public static void rep(int count, Func<int, bool> action)
-	{
-		for (var i = 0; i < count; i++)
-		{
-			if (!action(i)) break;
-		}
 	}
 
 	public static string ToBitString(this int num)
@@ -353,16 +248,6 @@ static class Program
 	static long GetGcd(this IEnumerable<long> numbers)
 	{
 		return numbers.Aggregate(GetGcd);
-	}
-
-	public static IEnumerable<int> Ie(int start, int count)
-	{
-		return Enumerable.Range(start, count);
-	}
-
-	public static IEnumerable<int> Ie(int count)
-	{
-		return Enumerable.Range(0, count);
 	}
 
 	public class LP
@@ -466,6 +351,37 @@ static class Program
 
 public static class Extension
 {
+	public static IEnumerable<T> MinBy<T, U>(this IEnumerable<T> source, Func<T, U> selector)
+	{
+		return SelectBy(source, selector, (a, b) => Comparer<U>.Default.Compare(a, b) < 0);
+	}
+
+	public static IEnumerable<T> MaxBy<T, U>(this IEnumerable<T> source, Func<T, U> selector)
+	{
+		return SelectBy(source, selector, (a, b) => Comparer<U>.Default.Compare(a, b) > 0);
+	}
+
+	private static IEnumerable<T> SelectBy<T, U>(IEnumerable<T> source, Func<T, U> selector, Func<U, U, bool> comparer)
+	{
+		var list = new LinkedList<T>();
+		U prevKey = default(U);
+		foreach (var item in source)
+		{
+			var key = selector(item);
+			if (list.Count == 0 || comparer(key, prevKey))
+			{
+				list.Clear();
+				list.AddLast(item);
+				prevKey = key;
+			}
+			else if (Comparer<U>.Default.Compare(key, prevKey) == 0)
+			{
+				list.AddLast(item);
+			}
+		}
+		return list;
+	}
+	
 	public static PriorityQueue<T> ToPriorityQueue<T>(this IEnumerable<T> source, bool isDescending = true)
 	{
 		var queue = new PriorityQueue<T>(isDescending);
