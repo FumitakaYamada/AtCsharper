@@ -16,23 +16,86 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
-
-		Wl();
+		inputter.GetNext().ToInt();
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		//debug
+		//var rand = new Random();
+		//a = Ie(100000).Select(x => rand.Next() % 100000).ToArray();
+		
+		var first = a.Take(a.Length / 2).ToArray();
+		var last = a.Skip((int)Math.Ceiling(a.Length / 2f)).Reverse().ToArray();
+		
+		
+		var differentNums = new List<int>();
+		
+		var dp = new int[a.Length];
+		
+		foreach (var i in Ie(a.Length/2))
+		{
+			var ff = first[i];
+			var ll = last[i];
+			if (ff == ll) continue;
+			
+			var small = Math.Min(ff, ll);
+			var big = Math.Max(ff, ll);
+			
+			differentNums.Add(ff);
+			differentNums.Add(ll);
+			
+			
+		}
+		
+		var count = differentNums.Distinct().Count();
+		
+		Wl(Math.Max(count - 1, 0));
+		
+//		var list = new List<List<int>>();
+//		
+//		foreach (var i in l)
+//		{
+//			var nums = i.Value.ToList();
+//			nums.Add(i.Key);
+//			
+//			var cl = list.Where(x => nums.Any(y => x.Contains(y))).ToArray();
+//			
+//			if (!cl.Any())
+//			{
+//				list.Add(nums);
+//				continue;
+//			}
+//
+//			if (cl.Length == 1)
+//			{
+//				cl.First().AddRange(nums);
+//			}
+//			else
+//			{
+//				var newList = new List<int>();
+//				foreach (var aaa in cl)
+//				{
+//					list.Remove(aaa);
+//					newList.AddRange(aaa);
+//				}
+//				list.Add(newList.Distinct().ToList());
+//			}
+//		}
+//		
+//		var sum = list.Select(x => x.Distinct().Count() - 1).Sum();
+//
+//		Wl(sum);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"1
+200000
+
+
 ";
 
 		private int _index = 0;

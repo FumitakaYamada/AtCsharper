@@ -16,23 +16,80 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		inputter.GetNext().ToInt();
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		//debug
+		var rand = new Random();
+		a = Ie(100000).Select(x => rand.Next() % 100000).ToArray();
+		
+		var first = a.Take(a.Length / 2).ToArray();
+		var last = a.Skip((int)Math.Ceiling(a.Length / 2f)).Reverse().ToArray();
+		
+		
+		var l = new Dictionary<int, List<int>>();
+		
+		foreach (var i in Ie(a.Length/2))
+		{
+			var ff = first[i];
+			var ll = last[i];
+			if (ff == ll) continue;
+			
+			var small = Math.Min(ff, ll);
+			var big = Math.Max(ff, ll);
+			
+			if (l.ContainsKey(small))
+			{
+				if (!l[small].Contains(big)) l[small].Add(big);
+			}
+			else l.Add(small, new List<int> { big });
+		}
+		
+		var list = new Dictionary<int, List<int>>();
+		
+		foreach (var i in l)
+		{
+			var nums = i.Value.ToList();
+			nums.Add(i.Key);
+			
+			var cl = list[i.Key];
+			
+			if (!cl.Any())
+			{
+				list.Add(nums);
+				continue;
+			}
 
-		Wl();
+			if (cl.Length == 1)
+			{
+				cl.First().AddRange(nums);
+			}
+			else
+			{
+				var newList = new List<int>();
+				foreach (var aaa in cl)
+				{
+					list.Remove(aaa);
+					newList.AddRange(aaa);
+				}
+				list.Add(newList.Distinct().ToList());
+			}
+		}
+		
+		var sum = list.Select(x => x.Distinct().Count() - 1).Sum();
+
+		Wl(sum);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"8
+1 5 3 2 5 2 3 1
+
 ";
 
 		private int _index = 0;

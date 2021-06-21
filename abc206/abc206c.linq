@@ -16,23 +16,32 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
-
-		Wl();
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
+		
+		var dic = a.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+	
+		var sum = 0L;
+		var count = 0L;
+		
+		foreach (var i in dic.Values)
+		{
+			sum += count * i;
+			count += i;
+		}
+		
+		Wl(sum);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"20
+7 8 1 1 4 9 9 6 8 2 4 1 1 9 5 5 5 3 6 4
+
 ";
 
 		private int _index = 0;

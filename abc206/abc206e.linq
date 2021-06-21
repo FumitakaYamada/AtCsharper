@@ -16,14 +16,55 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var l = inp[0];
+		var r = inp[1];
 
-		Wl();
+		//l = 1;
+		//r = 1000000;
+		
+		var sum = 0L;
+		
+		foreach (var i in Ie(2, 333333))
+		{
+			if (i > r / 2) break;
+			
+			var max = r / i;
+			var min = l / i;
+			
+			if (min == 1 || l % i != 0) min ++;
+			
+			if (min == max) continue;
+
+			var count = max - min + 1;
+			
+			if (max > min) sum += nPk(count, 2);
+
+			foreach (var j in Ie(2, 3333333))
+			{
+				var removeCount = 0;
+				foreach (var k in Ie(1, 333333))
+				{
+					var num = Math.Pow(j, k);
+					if (num <= r)
+					{
+						if (l <= num)
+						{
+							removeCount++;
+						}
+					}
+					else
+					{
+						break;
+					}
+				}
+				if (removeCount < 2) break;
+				
+				sum -= nPk(removeCount, 2);
+			}
+		}
+
+		Wl(sum);
 	}
 
 	public class Inputter
@@ -32,7 +73,8 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"4 10
+
 ";
 
 		private int _index = 0;
