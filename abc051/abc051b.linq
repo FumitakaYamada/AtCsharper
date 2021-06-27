@@ -17,27 +17,26 @@ static class Program
 	{
 		var inputter = new Inputter();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var xx = inp[0];
-		var yy = inp[1];
-		var n = inputter.GetNext().ToInt();
+		var k = inp[0];
+		var s = inp[1];
 		
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).Select(x => x + 100).ToArray()).ToArray();
+		var dp = new int[k + 1];
+		
+		foreach (var i in Ie(k + 1))
+		{
+			dp[i] = Ie(k + 1).Count(x => 0 <= s - i - x && s - i - x <= k);
+		}
 
-		Wl(l.Select(x => GetEuclidDistance(x[0], xx, x[1], yy)).Max());
+		Wl(dp.Sum());
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"0 0
-4
-100 100
--100 100
--100 -100
-100 -100
+	$@"2 2
 
 ";
 
@@ -117,7 +116,8 @@ static class Program
 	public static string ToString(this char[] ca) => new String(ca);
 	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 	public static void RemoveLast<T>(this List<T> list) => list.RemoveAt(list.Count() - 1);
-	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
+	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1-x2, 2) + Math.Pow(y1-y2, 2));
+	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetGcd);
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod = M)
@@ -193,7 +193,6 @@ static class Program
 		var result = 0;
 		foreach (var c in str.ToCharArray())
 		{
-			
 			if (c.Equals('1'))
 			{
 				result++;
@@ -208,7 +207,6 @@ static class Program
 	{
 		var i = 2L;
 		var tmp = n;
-
 		while (i * i <= n)
 		{
 			if (tmp % i == 0)
@@ -216,10 +214,7 @@ static class Program
 				tmp /= i;
 				yield return i;
 			}
-			else
-			{
-				i++;
-			}
+			else i++;
 		}
 		if (tmp != 1L) yield return tmp;
 	}
@@ -232,11 +227,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public class LP

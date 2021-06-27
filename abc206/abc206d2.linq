@@ -52,7 +52,7 @@ static class Program
 			var nums = i.Value.ToList();
 			nums.Add(i.Key);
 			
-			var cl = list[i.Key];
+			var cl = list;
 			
 			if (!cl.Any())
 			{

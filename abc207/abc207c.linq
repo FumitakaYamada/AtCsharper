@@ -16,28 +16,100 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var xx = inp[0];
-		var yy = inp[1];
 		var n = inputter.GetNext().ToInt();
+		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).Select(x =>
+		{
+			if (x[0] == 1)
+			{
+				return new double[] {
+					x[1], x[2]
+				};
+			}
+			if (x[0] == 2)
+			{
+				return new double[] {
+					x[1], x[2] - 0.3d
+				};
+			}
+			if (x[0] == 3)
+			{
+				return new double[] {
+					x[1] + 0.3d, x[2]
+				};
+			}
+			
+			return new double[] {
+				x[1] + 0.3d, x[2] - 0.3d
+			};
+		}).ToArray();
 		
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).Select(x => x + 100).ToArray()).ToArray();
+		//var numbers = new List<int>();
+		//
+		//foreach (var i in l)
+		//{
+		//	numbers.Add(i[1]);
+		//	numbers.Add(i[2]);
+		//}
+		//
+		//var dic = numbers.Distinct().Select((x, i) => new int[] { x, i }).ToDictionary(x => x[0], x => x[1]);
+		//
+		//dic.Dump();
+		//
+		//var dp = new int[4000];
+		
+		var count = 0L;
 
-		Wl(l.Select(x => GetEuclidDistance(x[0], xx, x[1], yy)).Max());
+		foreach (var i in Ie(n))
+		{
+			foreach (var j in Ie(n))
+			{
+				if (i >= j) continue;
+
+				var one = l[i];
+				var two = l[j];
+
+				if (one[1] < two[0] || two[1] < one[0]) continue;
+//
+//				($"{i} : {j}").Dump();
+//				
+//				if (i == 18 && j == 1)
+//				{
+//					Wl(0);
+//				}
+
+				count++;
+			}
+		}
+
+		Wl(count);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"0 0
-4
-100 100
--100 100
--100 -100
-100 -100
+	$@"19
+4 210068409 221208102
+4 16698200 910945203
+4 76268400 259148323
+4 370943597 566244098
+1 428897569 509621647
+4 250946752 823720939
+1 642505376 868415584
+2 619091266 868230936
+2 306543999 654038915
+4 486033777 715789416
+1 527225177 583184546
+2 885292456 900938599
+3 264004185 486613484
+2 345310564 818091848
+1 152544274 521564293
+4 13819154 555218434
+3 507364086 545932412
+4 797872271 935850549
+2 415488246 685203817
 
 ";
 
@@ -117,7 +189,8 @@ static class Program
 	public static string ToString(this char[] ca) => new String(ca);
 	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 	public static void RemoveLast<T>(this List<T> list) => list.RemoveAt(list.Count() - 1);
-	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
+	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1-x2, 2) + Math.Pow(y1-y2, 2));
+	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetGcd);
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod = M)
@@ -193,7 +266,6 @@ static class Program
 		var result = 0;
 		foreach (var c in str.ToCharArray())
 		{
-			
 			if (c.Equals('1'))
 			{
 				result++;
@@ -208,7 +280,6 @@ static class Program
 	{
 		var i = 2L;
 		var tmp = n;
-
 		while (i * i <= n)
 		{
 			if (tmp % i == 0)
@@ -216,10 +287,7 @@ static class Program
 				tmp /= i;
 				yield return i;
 			}
-			else
-			{
-				i++;
-			}
+			else i++;
 		}
 		if (tmp != 1L) yield return tmp;
 	}
@@ -232,11 +300,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public class LP

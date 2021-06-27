@@ -17,27 +17,45 @@ static class Program
 	{
 		var inputter = new Inputter();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var xx = inp[0];
-		var yy = inp[1];
-		var n = inputter.GetNext().ToInt();
-		
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).Select(x => x + 100).ToArray()).ToArray();
+		var n = inp[0];
+		var q = inp[1];
+		var l = Ie(q).Select(x => inputter.GetNext().Split().Select(ToInt).Select(x => x - 1).ToArray()).ToArray();
 
-		Wl(l.Select(x => GetEuclidDistance(x[0], xx, x[1], yy)).Max());
+		var dp = new int[n + 1];
+
+		foreach (var action in l)
+		{
+			dp[action[0]]++;
+			dp[action[1] + 1]++;
+		}
+		
+		// isBlack
+		var color = new bool[n];
+		
+		var lastIsBlack = true;
+		foreach (var i in Ie(n))
+		{
+			lastIsBlack = color[i] = (dp[i] % 2 == 0) == lastIsBlack;
+		}
+		
+		Wl(color.Select(x => x ? '0' : '1').ToArray().ToCCString());
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"0 0
-4
-100 100
--100 100
--100 -100
-100 -100
+	$@"20 8
+1 8
+4 13
+8 8
+3 18
+5 20
+19 20
+2 7
+4 9
 
 ";
 
@@ -114,10 +132,11 @@ static class Program
 	public static IEnumerable<int> Ie(long count) => Ie(0, count);
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
-	public static string ToString(this char[] ca) => new String(ca);
+	public static string ToCCString(this char[] ca) => new String(ca);
 	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 	public static void RemoveLast<T>(this List<T> list) => list.RemoveAt(list.Count() - 1);
-	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
+	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1-x2, 2) + Math.Pow(y1-y2, 2));
+	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetGcd);
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod = M)
@@ -193,7 +212,6 @@ static class Program
 		var result = 0;
 		foreach (var c in str.ToCharArray())
 		{
-			
 			if (c.Equals('1'))
 			{
 				result++;
@@ -208,7 +226,6 @@ static class Program
 	{
 		var i = 2L;
 		var tmp = n;
-
 		while (i * i <= n)
 		{
 			if (tmp % i == 0)
@@ -216,10 +233,7 @@ static class Program
 				tmp /= i;
 				yield return i;
 			}
-			else
-			{
-				i++;
-			}
+			else i++;
 		}
 		if (tmp != 1L) yield return tmp;
 	}
@@ -232,11 +246,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public class LP

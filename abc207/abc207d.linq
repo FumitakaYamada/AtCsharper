@@ -16,28 +16,126 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var xx = inp[0];
-		var yy = inp[1];
 		var n = inputter.GetNext().ToInt();
+		var s = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var t = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).OrderBy(x => GetEuclidDistance(0, 0, x[0], x[1])).ThenBy(x => x[0]).ToArray();
+		var txa = t.Select(x => x[0]).Average();
+		var tya = t.Select(x => x[1]).Average();
 		
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).Select(x => x + 100).ToArray()).ToArray();
+		bool Hantei(int[][] hs)
+		{
+			var aaaa = hs.OrderBy(x => GetEuclidDistance(0, 0, x[0], x[1])).ThenBy(x => x[0]).ToArray();
+			
+			var success = true;
+			foreach (var i in Ie(n))
+			{
+				if (t[i][0] == aaaa[i][0] && t[i][1] == aaaa[i][1]) continue;
 
-		Wl(l.Select(x => GetEuclidDistance(x[0], xx, x[1], yy)).Max());
+				success = false;
+				break;
+			}
+			
+			return success;
+		}
+
+		int[] rotate(int[] point, int deg)
+		{
+			if (deg == 0)
+			{
+				return new int[] {
+					point[0],
+					point[1],
+				};
+			}
+			if (deg == 1)
+			{
+				return new int[] {
+					point[1],
+					-point[0],
+				};
+			}
+			if (deg == 2)
+			{
+				return new int[] {
+					-point[0],
+					-point[1],
+				};
+			}
+			return new int[] {
+				-point[1],
+				point[0],
+			};
+		}
+
+		// 回転させてから移動させるパターン
+		foreach (var i in Ie(0, 4))
+		{
+			var ns = s.Select(x => rotate(x, i));
+
+			foreach (var k in Ie(1, 1600))
+			{
+				var ns2 = s.Slide(k / 40, k % 40);
+				//
+				//if (k == 940)
+				//{
+				//	Wl(1);
+				//}
+
+				if (Hantei(ns2))
+				{
+					Wl("Yes");
+					return;
+				}
+			}
+
+		}
+
+		// 移動させてから回転させるパターン
+		foreach (var i in Ie(1, 40))
+		{
+			foreach (var j in Ie(1, 40))
+			{
+				var ns2 = s.Slide(i, j);
+
+				foreach (var k in Ie(0, 4))
+				{
+					var ns = ns2.Select(x => rotate(x, k)).ToArray();
+
+					if (Hantei(ns))
+					{
+						Wl("Yes");
+						return;
+					}
+				}
+			}
+		}
+
+
+		Wl("No");
 	}
+
+
+
+	static int[][] Slide(this int[][] ii, int xx, int yy)
+	{
+		return ii.Select(x => new int[] { x[0] + xx - 20, x[1] + yy - 20 }).ToArray();
+	}
+
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"0 0
-4
-100 100
--100 100
--100 -100
-100 -100
+	$@"3
+0 0
+0 1
+1 0
+2 0
+3 0
+3 1
+
 
 ";
 
@@ -117,7 +215,8 @@ static class Program
 	public static string ToString(this char[] ca) => new String(ca);
 	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 	public static void RemoveLast<T>(this List<T> list) => list.RemoveAt(list.Count() - 1);
-	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
+	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1-x2, 2) + Math.Pow(y1-y2, 2));
+	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetGcd);
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod = M)
@@ -193,7 +292,6 @@ static class Program
 		var result = 0;
 		foreach (var c in str.ToCharArray())
 		{
-			
 			if (c.Equals('1'))
 			{
 				result++;
@@ -208,7 +306,6 @@ static class Program
 	{
 		var i = 2L;
 		var tmp = n;
-
 		while (i * i <= n)
 		{
 			if (tmp % i == 0)
@@ -216,10 +313,7 @@ static class Program
 				tmp /= i;
 				yield return i;
 			}
-			else
-			{
-				i++;
-			}
+			else i++;
 		}
 		if (tmp != 1L) yield return tmp;
 	}
@@ -232,11 +326,6 @@ static class Program
 			return b;
 		}
 		return GetGcd(b, r);
-	}
-
-	static long GetGcd(this IEnumerable<long> numbers)
-	{
-		return numbers.Aggregate(GetGcd);
 	}
 
 	public class LP
