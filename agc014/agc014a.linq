@@ -16,23 +16,47 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		
+		var sum = inp.Sum();
+		
+		var last = inp.ToArray();
+		
+		bool isSame()
+		{
+			foreach (var i in Ie(3))
+			{
+				if (last[i] != inp[i]) return false;
+			}
+			return true;
+		}
+		
+		
+		var count = 0L;
+		while (!inp.Any(x => x % 2 == 1))
+		{
+			last = inp.ToArray();
+			inp = inp.Select(x => (sum - x) / 2).ToArray();
+			
+			if (isSame())
+			{
+				Wl("-1");
+				return;
+			}
 
-		Wl();
+			count++;
+		}
+
+		Wl(count);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"999988982 999988982 999988982
 ";
 
 		private int _index = 0;
@@ -114,11 +138,6 @@ static class Program
 	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
 	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetGcd);
 	public static SortedDictionary<TKey, TElement> ToSortedDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector) where TKey : notnull => new SortedDictionary<TKey, TElement>(source.ToDictionary(keySelector, elementSelector, null));
-	public static void AddOrCreate<TKey, TElement>(this Dictionary<TKey, List<TElement>> dic, TKey key, TElement value)
-	{
-		if (!dic.ContainsKey(key)) dic.Add(key, new List<TElement>());
-		dic[key].Add(value);
-	}
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod = M)

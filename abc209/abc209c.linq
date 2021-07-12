@@ -16,23 +16,46 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var c = inputter.GetNext().Split().Select(ToInt).OrderBy(x => x).ToArray();
+		
+		var sum = 1L;
+		var used = 0L;
+		
+		foreach (var i in Ie(n))
+		{
+			sum *= (c[i] - used) % M;
+			sum = sum % M;
+			used ++;
+		}
+		
+		//var dic = c.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+		//
+		//var used = 0L;
+		//
+		//var sum = 1L;
+		//
+		//foreach (var kv in dic)
+		//{
+		//	var npk = nPk(kv.Key - used, kv.Value) % M;
+		//	sum *= npk;
+		//	
+		//	used += kv.Value;
+		//}
 
-		Wl();
+		Wl(sum);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"10
+999999917 999999914 999999923 999999985 999999907 999999965 999999914 999999908 999999951 999999979
+
+
 ";
 
 		private int _index = 0;
@@ -114,11 +137,6 @@ static class Program
 	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
 	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetGcd);
 	public static SortedDictionary<TKey, TElement> ToSortedDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector) where TKey : notnull => new SortedDictionary<TKey, TElement>(source.ToDictionary(keySelector, elementSelector, null));
-	public static void AddOrCreate<TKey, TElement>(this Dictionary<TKey, List<TElement>> dic, TKey key, TElement value)
-	{
-		if (!dic.ContainsKey(key)) dic.Add(key, new List<TElement>());
-		dic[key].Add(value);
-	}
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod = M)

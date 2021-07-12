@@ -16,23 +16,92 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var l = Ie(n).Select(x => inputter.GetNext()).ToArray();
+		
+		var first = new int[n];
+		var last = new int[n];
 
-		Wl();
+		int sToI(char[] cs)
+		{
+			return cs[0] * 123 * 123 + cs[1] * 123 + cs[0];
+		}
+
+		var forward = new Dictionary<int, List<int>>();
+		var backward = new Dictionary<int, List<int>>();
+
+		foreach (var i in Ie(n))
+		{
+			var str = l[i];
+
+			first[i] = sToI(str.ToCharArray().Take(3).ToArray());
+			last[i] = sToI(str.ToCharArray().Skip(str.Length - 3).ToArray());
+			
+			forward.AddOrCreate(first[i], i);
+			backward.AddOrCreate(last[i], i);
+		}
+		
+		var map = new int[n];
+		
+		var queue = new Queue<int>();
+		
+		foreach (var i in Ie(n))
+		{
+			if (!forward.ContainsKey(last[i]))
+			{
+				map[i] = 10;
+				
+				queue.Enqueue(i);
+			}
+		}
+		
+		int swap(int a)
+		{
+			if (a == 10) return 11;
+			else return 10;
+		}
+		
+		//bfs
+		while (queue.Any())
+		{
+			var p = queue.Dequeue();
+
+			var stat = map[p];
+			
+			if (stat == 0) continue;
+			if (!backward.ContainsKey(first[p])) continue;
+			
+			foreach (var back in backward[first[p]])
+			{
+				if (forward.ContainsKey(last[back]) && forward[last[back]].All(x => map[x] == stat))
+				{
+					map[back] = swap(stat);
+					queue.Enqueue(back);
+				}
+			}
+		}
+		
+		foreach (var i in Ie(n))
+		{
+			if (map[i] == 0) Wl("Draw");
+			else if (map[i] == 10) Wl("Takahashi");
+			else Wl("Aoki");
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
+
 
 		public static string _str =
-	$@"
+$@"3
+abcd
+bcda
+ada
+
+
 ";
 
 		private int _index = 0;
@@ -108,7 +177,7 @@ static class Program
 	public static IEnumerable<int> Ie(long count) => Ie(0, count);
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
-	public static string ToString(this char[] ca) => new String(ca);
+	public static string ToCString(this char[] ca) => new String(ca);
 	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 	public static void RemoveLast<T>(this List<T> list) => list.RemoveAt(list.Count() - 1);
 	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));

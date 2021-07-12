@@ -16,23 +16,128 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var l = Ie(n).Select(x => inputter.GetNext()).ToArray();
+		
+		// debug
+		//n = 200000;
+		//l = Ie(n).Select(x => Guid.NewGuid().ToString()).ToArray();
+		
+		var mj = int.MaxValue / 2;
 
-		Wl();
+		var first = new string[n];
+		var last = new string[n];
+
+		var f2lDic = new Dictionary<string, List<int>>();
+		var l2fDic = new Dictionary<string, List<int>>();
+
+		foreach (var i in Ie(n))
+		{
+			var str = l[i];
+
+			first[i] = str.ToCharArray().Take(3).ToArray().ToCString();
+			last[i] = str.ToCharArray().Skip(str.Length - 3).ToArray().ToCString();
+			
+			var key = last[i];
+			if (!f2lDic.ContainsKey(key))
+			{
+				f2lDic.Add(key, new List<int>());
+			}
+			f2lDic[key].Add(i);
+
+			var ff = first[i];
+			if (!l2fDic.ContainsKey(ff))
+			{
+				l2fDic.Add(ff, new List<int>());
+			}
+			l2fDic[ff].Add(i);
+		}
+
+		var dead = new List<int>();
+
+		foreach (var i in Ie(n))
+		{
+			var str = last[i];
+			
+			if (!l2fDic.ContainsKey(str) || !l2fDic[str].Any()) dead.Add(i);
+		}
+		
+		var grundy = Ie(n).Select(x => mj).ToArray();
+		var skipper = new bool[n];
+		
+		foreach (var deadNum in dead)
+		{
+			grundy[deadNum] = 0;
+
+			var stack = new List<int>();
+
+			void dfs(int p)
+			{
+				var nextG = grundy[p] + 1;
+
+				if (!f2lDic.ContainsKey(first[p])) return;
+				if (skipper[p]) return;
+
+				foreach (var next in f2lDic[first[p]])
+				{
+					if (p == next) continue;
+					if (grundy[next] <= nextG) continue;
+					grundy[next] = nextG;
+					if (skipper[next]) continue;
+					
+					//if (stack.Contains(next))
+					//{
+					//	var index = stack.IndexOf(next);
+					//	
+					//	if (index % 2 == 0)
+					//	{
+					//		foreach (var i in Ie(index, stack.Count() - index))
+					//		{
+					//			grundy[i] = mj;
+					//			skipper[i] = true;
+					//			return;
+					//		}
+					//	}
+					//}
+					
+					stack.Add(p);
+					dfs(p);
+					stack.Remove(p);
+				}
+			}
+			
+			dfs(deadNum);
+		}
+		
+		foreach (var i in Ie(n))
+		{
+			if (grundy[i] == mj) Wl("Draw");
+			else if (grundy[i] % 2 == 0) Wl("Takahashi");
+			else Wl("Aoki");
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
-		public static string _str =
-	$@"
+//		public static string _str =
+//	$@"3
+//abcd
+//bcda
+//ada
+//
+//";
+
+				public static string _str =
+	$@"5
+abcd
+bcde
+kkkabc
+jjjabc
+abckkk
+
 ";
 
 		private int _index = 0;
@@ -108,17 +213,12 @@ static class Program
 	public static IEnumerable<int> Ie(long count) => Ie(0, count);
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
-	public static string ToString(this char[] ca) => new String(ca);
+	public static string ToCString(this char[] ca) => new String(ca);
 	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 	public static void RemoveLast<T>(this List<T> list) => list.RemoveAt(list.Count() - 1);
 	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
 	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetGcd);
 	public static SortedDictionary<TKey, TElement> ToSortedDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector) where TKey : notnull => new SortedDictionary<TKey, TElement>(source.ToDictionary(keySelector, elementSelector, null));
-	public static void AddOrCreate<TKey, TElement>(this Dictionary<TKey, List<TElement>> dic, TKey key, TElement value)
-	{
-		if (!dic.ContainsKey(key)) dic.Add(key, new List<TElement>());
-		dic[key].Add(value);
-	}
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod = M)

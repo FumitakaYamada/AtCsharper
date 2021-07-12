@@ -16,23 +16,27 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var n = inp[0];
+		var xx = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
 
-		Wl();
+		var waribiki = n / 2;
+		
+		var sum = a.Sum();
+
+		Wl(xx < (sum - waribiki) ? "No" : "Yes");
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"8 30
+3 1 4 1 5 9 2 6
+
 ";
 
 		private int _index = 0;
@@ -114,11 +118,6 @@ static class Program
 	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
 	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetGcd);
 	public static SortedDictionary<TKey, TElement> ToSortedDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector) where TKey : notnull => new SortedDictionary<TKey, TElement>(source.ToDictionary(keySelector, elementSelector, null));
-	public static void AddOrCreate<TKey, TElement>(this Dictionary<TKey, List<TElement>> dic, TKey key, TElement value)
-	{
-		if (!dic.ContainsKey(key)) dic.Add(key, new List<TElement>());
-		dic[key].Add(value);
-	}
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod = M)

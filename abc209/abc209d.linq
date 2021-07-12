@@ -16,23 +16,83 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var n = inp[0];
+		var q = inp[1];
+		var ab = Ie(n - 1).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var cd = Ie(q).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		
+		var pathes = new Dictionary<int, List<int>>();
+		
+		foreach (var i in Ie(n))
+		{
+			pathes.Add(i, new List<int>());
+		}
 
-		Wl();
+		foreach (var i in ab)
+		{
+			pathes[i[0] - 1].Add(i[1] - 1);
+			pathes[i[1] - 1].Add(i[0] - 1);
+		}
+		
+		var dp = new bool[n];
+		dp[0] = true;
+		
+		var fx = new bool[n];
+		
+		var queue = new Queue<int>();
+		queue.Enqueue(0);
+
+		while (queue.Any())
+		{
+			var p = queue.Dequeue();
+			
+			fx[p] = true;
+			
+			foreach (var next in pathes[p])
+			{
+				if (fx[next]) continue;
+				dp[next] = !dp[p];
+				fx[next] = true;
+				queue.Enqueue(next);
+			}
+		}
+
+		foreach (var query in cd)
+		{
+			var start = query[0] - 1;
+			var goal = query[1] - 1;
+			
+			if (dp[start] == dp[goal]) Wl("Town");
+			else Wl("Road");
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"9 9
+2 3
+5 6
+4 8
+8 9
+4 5
+3 4
+1 9
+3 7
+7 9
+2 5
+2 6
+4 6
+2 4
+5 8
+7 8
+3 6
+5 6
+
 ";
 
 		private int _index = 0;
@@ -114,11 +174,6 @@ static class Program
 	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
 	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetGcd);
 	public static SortedDictionary<TKey, TElement> ToSortedDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector) where TKey : notnull => new SortedDictionary<TKey, TElement>(source.ToDictionary(keySelector, elementSelector, null));
-	public static void AddOrCreate<TKey, TElement>(this Dictionary<TKey, List<TElement>> dic, TKey key, TElement value)
-	{
-		if (!dic.ContainsKey(key)) dic.Add(key, new List<TElement>());
-		dic[key].Add(value);
-	}
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod = M)

@@ -16,23 +16,58 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var a = Ie(n).Select(x => inputter.GetNext().ToInt()).ToArray();
 
-		Wl();
+		var sum = 0L;
+		var amari = false;
+
+		foreach (var i in Ie(n))
+		{
+			if (a[i] == 0)
+			{
+				amari = false;
+				continue;
+			}
+			
+			if (a[i] % 2 == 0)
+			{
+				sum += a[i] / 2;
+			}
+			else
+			{
+				if (amari)
+				{
+					amari = false;
+					sum += (a[i] + 1) / 2;
+				}
+				else
+				{
+					amari = true;
+					sum += a[i] / 2;
+				}
+			}
+		}
+		
+		Wl(sum);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"8
+2
+0
+1
+6
+0
+8
+2
+1
+
 ";
 
 		private int _index = 0;
@@ -114,11 +149,6 @@ static class Program
 	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
 	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetGcd);
 	public static SortedDictionary<TKey, TElement> ToSortedDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector) where TKey : notnull => new SortedDictionary<TKey, TElement>(source.ToDictionary(keySelector, elementSelector, null));
-	public static void AddOrCreate<TKey, TElement>(this Dictionary<TKey, List<TElement>> dic, TKey key, TElement value)
-	{
-		if (!dic.ContainsKey(key)) dic.Add(key, new List<TElement>());
-		dic[key].Add(value);
-	}
 
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod = M)
@@ -543,6 +573,8 @@ public class PriorityQueue<TKey, TValue> : IEnumerable<TValue>
 	{
 		return _isDescending ? _keyComparer.Compare(b, a) : _keyComparer.Compare(a, b);
 	}
+
+
 
 	public int Count => _data.Count;
 
