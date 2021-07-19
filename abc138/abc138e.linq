@@ -17,22 +17,80 @@ static class Program
 	{
 		var inputter = new Inputter();
 		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var t = inputter.GetNext();
 
-		Wl();
+		// debug
+		//s = Ie(100000).Select(x => GetRandomAlphabetChar()).ToArray().ToCString();
+		//t = Ie(100000).Select(x => GetRandomAlphabetChar()).ToArray().ToCString();
+
+		var dic = t.ToCharArray().GroupBy(x => x).ToDictionary(x => x.Key, x => s.AllIndexesOf(x.Key.ToString()).ToArray());
+		
+		if (!dic.Values.All(x => x.Any()))
+		{
+			Wl(-1);
+			return;
+		}
+		
+		var dp = new long[26, s.Length];
+		
+		foreach (var c in dic.Keys)
+		{
+			var key = ((int)c) - 97;
+			
+			var value = dic[c];
+			var idx = 0;
+			var next = value[idx];
+			var last = false;
+
+			foreach (var j in Ie(s.Length))
+			{
+				if (last)
+				{
+					dp[key, j] = value[0] + s.Length;
+					continue;
+				}
+				
+				if (j > next)
+				{
+					idx ++;
+					if (idx >= value.Length)
+					{
+						last = true;
+						idx = 0;
+					}
+				}
+				next = value[idx];
+				dp[key, j] = next;
+				if (last) dp[key, j] += s.Length;
+			}
+		}
+		
+		//dp.Dump();
+		
+		var index = 0L;
+		foreach (var c in t.ToCharArray())
+		{
+			var key = ((int)c) - 97;
+			
+			//(index % s.Length).Dump();
+			
+			index += (dp[key, index % s.Length] - index % s.Length) + 1;
+		}
+
+		Wl(index);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"contest
+sentence
+
+
+
 ";
 
 		private int _index = 0;
@@ -93,7 +151,7 @@ static class Program
 		}
 		return x;
 	}
-	
+
 	public static Random rand = new Random();
 
 	public static char GetRandomAlphabetChar() => ("abcdefghijklmnopqrstuvwxyz".ToCharArray()[rand.Next() % 26]);

@@ -16,14 +16,77 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var h = inp[0];
+		var w = inp[1];
+		var l = Ie(h).Select(x => inputter.GetNext().ToCharArray().Select(x => x.Equals('#')).ToArray()).ToArray();
 
-		Wl();
+		var pathes = new List<int[]>();
+
+		bool? GetValue(int point)
+		{
+			var hp = point / w;
+			var wp = point % w;
+			
+			if (hp < 0 || wp < 0 || hp >= h || wp >= w) return null;
+			return l[hp][wp];
+		}
+		
+		bool IsDifferent(bool? first, bool? second)
+		{
+			return first != null && second != null && first != second;
+		}
+
+		foreach (var i in Ie(h * w))
+		{
+			var v = GetValue(i);
+			var dPoints = new int[] { i + 2 * w, i + 2 * h };
+			
+			foreach (var point in dPoints)
+			{
+				var val = GetValue(point);
+				if (val == null) continue;
+				var center = GetValue((i + point) / 2);
+				if (val != center && center != v) pathes.Add(new int[] { i , point});
+			}
+			
+			var rv = GetValue(i + 1);
+			var uv = GetValue(i - w);
+			var dv = GetValue(i + w);
+			var ur = i - w + 1;
+			var dr = i + w + 1;
+			var urv = GetValue(ur);
+			var drv = GetValue(dr);
+
+			if (IsDifferent(rv, v) || IsDifferent(uv, v)) if (urv != null && v == urv) pathes.Add(new int[] { ur, i });
+			if (IsDifferent(rv, v) || IsDifferent(dv, v)) if (drv != null && v == drv) pathes.Add(new int[] { i, dr });
+		}
+		
+		pathes.Dump();
+		
+		var groups = new List<List<int>>();
+		
+		foreach (var path in pathes)
+		{
+			var list = groups.FirstOrDefault(x => x.Contains(path[0]) || x.Contains(path[1]));
+			if (list == null)
+			{
+				list = new List<int>();
+				groups.Add(list);
+			}
+			list.Add(path[0]);
+			list.Add(path[1]);
+		}
+		
+		var sum = 0L;
+		
+		foreach (var group in groups)
+		{
+			var count = group.Distinct().Count();
+			sum += nPk(count, 2);
+		}
+
+		Wl(sum);
 	}
 
 	public class Inputter
@@ -32,7 +95,11 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3 3
+.#.
+..#
+#..
+
 ";
 
 		private int _index = 0;

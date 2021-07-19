@@ -16,23 +16,52 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var s = inputter.GetNext();
+		var t = Ie(n).Select(x => inputter.GetNext()).ToArray();
+		
+		var lengths = t.Select(x => x.Length).ToArray();
 
-		Wl();
+		var min = lengths.Min();
+		var max = lengths.Max();
+		
+		var dp = new long[s.Length + 1];
+		dp[0] = 1;
+		
+		foreach (var i in Ie(s.Length + 1))
+		{
+			foreach (var j in Ie(n))
+			{
+				var str = t[j];
+				if (s.Length < i + str.Length) continue;
+				var substr = s.Substring(i, str.Length);
+				if (!str.Equals(substr)) continue;
+				
+				dp[i + str.Length] = (dp[i + str.Length] + dp[i]) % M;
+			}
+		}
+
+		Wl(dp[s.Length]);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"10
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+a
+aa
+aaa
+aaaa
+aaaaa
+aaaaaa
+aaaaaaa
+aaaaaaaa
+aaaaaaaaa
+aaaaaaaaaa
 ";
 
 		private int _index = 0;
@@ -93,10 +122,7 @@ static class Program
 		}
 		return x;
 	}
-	
-	public static Random rand = new Random();
 
-	public static char GetRandomAlphabetChar() => ("abcdefghijklmnopqrstuvwxyz".ToCharArray()[rand.Next() % 26]);
 	public static string ToSpaceString<T>(this IEnumerable<T> ie) => String.Join(' ', ie.ToArray());
 	public static IEnumerable<long> ToLong(this IEnumerable<int> ie) => ie.Select(x => (long)x);
 	public static long LongSum(this IEnumerable<int> ie) => ie.ToLong().Sum();
@@ -111,7 +137,7 @@ static class Program
 	public static IEnumerable<int> Ie(long count) => Ie(0, count);
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
-	public static string ToCString(this char[] ca) => new String(ca);
+	public static string ToString(this char[] ca) => new String(ca);
 	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 	public static void RemoveLast<T>(this List<T> list) => list.RemoveAt(list.Count() - 1);
 	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
@@ -122,20 +148,7 @@ static class Program
 		if (!dic.ContainsKey(key)) dic.Add(key, new List<TElement>());
 		dic[key].Add(value);
 	}
-	public static List<int> AllIndexesOf(this string str, string value)
-	{
-		if (String.IsNullOrEmpty(value))
-			throw new ArgumentException("the string to find may not be empty", "value");
-		List<int> indexes = new List<int>();
-		for (int index = 0; ; index += value.Length)
-		{
-			index = str.IndexOf(value, index);
-			if (index == -1)
-				return indexes;
-			indexes.Add(index);
-		}
-	}
-	
+
 	// a ^ n mod mod
 	public static long ModPow(long a, long n, long mod = M)
 	{

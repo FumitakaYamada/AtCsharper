@@ -16,23 +16,55 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var n = inp[0];
+		var k = inp[1];
+		var l = inputter.GetNext().Split().Select(ToInt).ToArray();
 
-		Wl();
+		var dic = l.GroupBy(x => x).ToDictionary(x => x.Key, x => 0);
+
+		foreach (var i in Ie(k))
+		{
+			var color = l[i];
+			dic[color] += 1;
+		}
+		
+		var current = dic.Count(x => x.Value > 0);
+
+		var max = current;
+
+		if (n == k)
+		{
+			Wl(max);
+			return;
+		}
+
+		foreach (var i in Ie(n - k))
+		{
+			var ac = l[i + k];
+			var rc = l[i];
+			
+			if (dic[ac] == 0) current++;
+			dic[ac] += 1;
+			
+			dic[rc] -= 1;
+			if (dic[rc] == 0) current--;
+			
+			max = Math.Max(max, current);
+		}
+
+		Wl(max);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"7 3
+1 2 1 2 3 3 1
+
 ";
 
 		private int _index = 0;

@@ -16,23 +16,22 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var s = inputter.GetNext();
+		
+		var dic = s.ToCharArray().GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count() % 2);
 
-		Wl();
+		Wl(dic.Values.Sum());
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"9
+RGBGGBGBR
 ";
 
 		private int _index = 0;

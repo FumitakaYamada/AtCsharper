@@ -16,20 +16,36 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
 		var a = inp[0];
 		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		
+		
+		if (n <= a) goto taka;
+		
+		if (a == b)
+		{
+			if (n % (a + 1) == 0) goto aoki;
+			else goto taka;
+		}
+		
+		if (a > b) goto taka;
+		else goto aoki;
 
-		Wl();
+		taka:
+		Wl("Takahashi");
+		return;
+		
+		aoki:
+		Wl("Aoki");
+		return;
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
 	$@"

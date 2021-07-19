@@ -16,14 +16,59 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var h = inp[0];
+		var w = inp[1];
+		var c = inp[2];
+		var a = Ie(h).Select(x => inputter.GetNext().Split().Select(ToLong).ToArray()).ToArray();
 
-		Wl();
+		var nums = a.SelectMany(x => x).ToArray();
+		var min = nums.Min();
+		
+		var ac = long.MaxValue;
+		var wc = 0L;
+		
+		while (wc + 1 < ac)
+		{
+			var wj = (ac + wc) / 2;
+			
+			foreach (var i in Ie(h))
+			{
+				foreach (var j in Ie(w))
+				{
+					var left = wj - a[i][j];
+					
+					if (left < c + min) continue;
+					
+					foreach (var k in Ie(1, Math.Min(left / c + 1, w + h + 1)))
+					{
+						var requiredNum = left - (k * c);
+						
+						if (requiredNum < 0) break;
+						
+						foreach (var kk in Ie(k + 1))
+						{
+							var hpos = i + k - kk;
+							var wpos = j + kk;
+							
+							if (hpos >= h) continue;
+							if (wpos >= w) continue;
+							
+							if (a[hpos][wpos] <= requiredNum) goto approved;
+						}
+					}
+				}
+			}
+			
+			wc = wj;
+			continue;
+			
+			approved:
+			ac = wj;
+			continue;
+		}
+
+		Wl(ac);
 	}
 
 	public class Inputter
@@ -32,7 +77,11 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3 4 2
+1 7 7 9
+9 6 3 7
+7 8 6 4
+
 ";
 
 		private int _index = 0;

@@ -16,23 +16,78 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var a = inp[0] * 100;
+		var b = inp[1] * 100;
+		var c = inp[2];
+		var d = inp[3];
+		var e = inp[4];
+		var f = inp[5];
+		
+		var waters = new List<int>();
+		
+		foreach (var i in Ie(f / a + 1))
+		{
+			foreach (var j in Ie(f / b + 1))
+			{
+				var sum = i * a + j * b;
+				if (sum > f) break;
+				waters.Add(sum);
+			}
+		}
+		
+		waters = waters.Distinct().ToList();
+		
+		waters.Remove(0);
+		
+		var sugars = new List<int>();
+		
+		foreach (var i in Ie(f / c + 1))
+		{
+			foreach (var j in Ie(f / d + 1))
+			{
+				var sum = i * c + j * d;
+				if (sum > f) break;
+				sugars.Add(sum);
+			}
+		}
+		
+		sugars = sugars.Distinct().ToList();
+		
+		var mixed = new List<double[]>();
+		
+		foreach (var w in waters)
+		{
+			foreach (var s in sugars)
+			{
+				//if (w == 1200 && s == 660)
+				//{
+				//	Wl("hello");
+				//}
+				if (w + s > f) continue;
+				var cons = s * 1d / (w * 1d) * 100d;
+				if (cons - 0.000001 > e) continue;
+				mixed.Add(new double[] { w, s, s * 1d / (w + s * 1d) * 100d });
+			}
+		}
+		
+		//mixed.Where(x => x[0] == 1200 && x[1] == 660).Dump();
+		
+		//mixed.Select(x => x[1] / (x[0] + x[1] * 1d)).OrderByDescending(x => x).Dump();
+		
+		var max = mixed.MaxBy(x => x[2]).First();
 
-		Wl();
+		Wl((max[0] + max[1]) + " " + max[1]);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3 9 4 28 55 2859
+
 ";
 
 		private int _index = 0;

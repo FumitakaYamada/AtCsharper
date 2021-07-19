@@ -16,23 +16,29 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var n = inp[0];
+		var a = inp[1];
+		var xx = inp[2];
+		var yy = inp[3];
 
-		Wl();
+		if (a >= n)
+		{
+			Wl(xx * n);
+			return;
+		}
+		
+		Wl(a * xx + (n - a) * yy);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"10 10 100 1
+
 ";
 
 		private int _index = 0;

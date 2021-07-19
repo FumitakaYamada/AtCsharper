@@ -16,14 +16,80 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var t = inputter.GetNext().ToInt();
+		var l = Ie(t).Select(x => inputter.GetNext().ToLong()).ToArray();
 
-		Wl();
+		//l = new long[] { 1000000000000000000 };
+		
+		foreach (var n in l)
+		{
+			var ca = n.ToString().ToCharArray().Reverse().ToArray();
+			var count = ca.Length;
+
+			// 桁目、繰り上がる桁数
+			var dpMin = new int[count + 1, 10];
+			var dpMax = new int[count + 1, 10];
+
+			foreach (var i in Ie(count + 1))
+			{
+				foreach (var j in Ie(10))
+				{
+					dpMin[i, j] = 101;
+					dpMax[i, j] = 0;
+				}
+			}
+
+			dpMin[0, 0] = 0;
+			dpMax[0, 0] = 100;
+			
+			foreach (var i in Ie(1, count))
+			{
+				var keta = ca[i - 1].ToInt();
+
+				// 前項の繰り上がる桁数
+				foreach (var j in Ie(10))
+				{
+					var min = dpMin[i - 1, j];
+					var max = dpMax[i - 1, j];
+					
+					if (min == 101) continue;
+
+					if (min > max || max == 0) continue;
+					
+					// この項の繰り上がる桁数
+					foreach (var k in Ie(10))
+					{
+						if (i == count + 1) if (k != 0) break;
+						
+						var num = k * 10 + keta + j;
+
+						var nmax = num;
+						var nmin = (int)Math.Ceiling(num / 3d);
+						
+						if (nmin > nmax || nmax == 0) continue;
+						if (nmin > max) continue;
+
+						dpMin[i, k] = Math.Min(Math.Max(min, nmin), dpMin[i, k]);
+						dpMax[i, k] = Math.Max(Math.Min(max, nmax), dpMax[i, k]);
+					}
+				}
+			}
+			
+			dpMin.Dump();
+			dpMax.Dump();
+
+
+//			var mm = int.MaxValue;
+//
+//			foreach (var i in Ie(1, count))
+//			{
+//				mm = Math.Min(mm, dpMin[count, 0]);
+//			}
+//
+//			Wl(mm);
+//			
+			Wl(dpMin[count, 0]);
+		}
 	}
 
 	public class Inputter
@@ -32,7 +98,13 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"5
+456
+10000
+123
+314
+91
+
 ";
 
 		private int _index = 0;

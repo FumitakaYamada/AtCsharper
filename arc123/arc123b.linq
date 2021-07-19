@@ -16,23 +16,57 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var a = inputter.GetNext().Split().Select(ToLong).OrderBy(x => x).ToArray();
+		var b = inputter.GetNext().Split().Select(ToLong).OrderBy(x => x).ToArray();
+		var c = inputter.GetNext().Split().Select(ToLong).OrderBy(x => x).ToArray();
 
-		Wl();
+		var sb = 0L;
+		var sc = 0L;
+
+		var result = 0L;
+
+		foreach (var i in Ie(n))
+		{
+			var aa = a[i];
+			
+			if (i + sb >= n || i + sc >= n) goto end;
+			
+			var bb = b[i + sb];
+			while (bb <= aa)
+			{
+				sb++;
+				if (i + sb >= n) goto end;
+				bb = b[i + sb];
+			}
+			
+			var cc = c[i + sc];
+			while (cc <= bb)
+			{
+				sc++;
+				if (i + sc >= n) goto end;
+				cc = c[i + sc];
+			}
+			
+			result++;
+		}
+		
+		end:
+
+		Wl(result);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3
+3 3 3
+2 2 2
+1 1 1
+
 ";
 
 		private int _index = 0;

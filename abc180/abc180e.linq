@@ -16,12 +16,37 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
 		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+
+		int GetDist(int[] start, int[] goal) => Math.Abs(goal[0] - start[0]) + Math.Abs(goal[1] - start[1]) + Math.Max(goal[2] - start[2], 0);
+
+		int ToBits(int[] points) => (int)points.Select(x => Math.Pow(2, x + 1)).Sum();
+		int ToBit(int point) => (int)Math.Pow(2, point);
+
+		var dd = Ie(n * n).ToDictionary(x => x, x => GetDist(l[x / n], l[x % n]));
+
+		dd.Dump();
+		
+		var points = Ie(1, n).Sum();
+		
+		var dp = new long[n, points];
+		
+		foreach (var i in Ie(n))
+		{
+			dp[i, 1] = dd[i];
+		}
+		
+		foreach (var i in Ie(points))
+		{
+			foreach (var j in Ie(n))
+			{
+				foreach (var k in Ie(n))
+				{
+					dp[j, i + (int)Math.Pow(2, j)] = dp[j, i - 
+				}
+			}
+		}
 
 		Wl();
 	}
@@ -32,7 +57,10 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"2
+0 0 0
+1 2 3
+
 ";
 
 		private int _index = 0;

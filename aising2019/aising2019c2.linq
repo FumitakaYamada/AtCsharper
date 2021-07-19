@@ -16,14 +16,26 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var h = inp[0];
+		var w = inp[1];
+		var l = Ie(h).Select(x => inputter.GetNext().ToCharArray().Select(x => x.Equals('#')).ToArray()).ToArray();
 
-		Wl();
+		bool? GetValue(int point)
+		{
+			var hp = point / w;
+			var wp = point % w;
+			
+			if (hp < 0 || wp < 0 || hp >= h || wp >= w) return null;
+			return l[hp][wp];
+		}
+		
+		bool IsDifferent(bool? first, bool? second)
+		{
+			return first != null && second != null && first != second;
+		}
+
+		
 	}
 
 	public class Inputter
@@ -32,7 +44,11 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3 3
+.#.
+..#
+#..
+
 ";
 
 		private int _index = 0;
