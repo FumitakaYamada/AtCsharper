@@ -16,82 +16,65 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var t = inputter.GetNext().ToInt();
-		var l = Ie(t).Select(x => inputter.GetNext().ToLong()).ToArray();
+		var n = inputter.GetNext().ToInt();
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		var b = inputter.GetNext().Split().Select(ToInt).ToArray();
 		
-		//debug
-		//l = Ie(1000).Select(x => rand.Next() % 1000000000000000000).ToArray();
-
-		foreach (var n in l)
+		bool[] ToBa(int num)
 		{
-			var ca = n.ToString().ToCharArray().Reverse().ToArray();
-			var count = ca.Length;
-
-			// 桁目、繰り上がる桁数
-			var dpMin = new int[count + 1, 10];
-			var dpMax = new int[count + 1, 10];
-
-			foreach (var i in Ie(count + 1))
+			var bs = ToBitString(num).ToCharArray().Reverse().ToArray();;
+			var res = new bool[30];
+			foreach (var i in Ie(30))
 			{
-				foreach (var j in Ie(10))
-				{
-					dpMin[i, j] = 101;
-					dpMax[i, j] = 0;
-				}
+				res[i] = bs[i].Equals('1');
 			}
-
-			dpMin[0, 0] = 0;
-			dpMax[0, 0] = 100;
-
-			foreach (var i in Ie(1, count))
-			{
-				var keta = ca[i - 1].ToInt();
-
-				// 前項の繰り上がる桁数
-				foreach (var j in Ie(10))
-				{
-					var min = dpMin[i - 1, j];
-					var max = dpMax[i - 1, j];
-
-					if (min == 101) continue;
-
-					// この項の繰り上がる桁数
-					foreach (var k in Ie(10))
-					{
-						var num = k * 10 + keta + j;
-
-						var nmax = num;
-						var nmin = (int)Math.Ceiling(num / 3d);
-
-						if (nmin > nmax || nmax == 0) continue;
-						if (nmin > max) continue;
-
-						dpMin[i, k] = Math.Min(Math.Max(min, nmin), dpMin[i, k]);
-						dpMax[i, k] = Math.Max(Math.Min(max, nmax), dpMax[i, k]);
-					}
-				}
-			}
-
-			//dpMin.Dump();
-			//dpMax.Dump();
-
-			//if (dpMin[count, 0] == 5)
-			//{
-			//	Wl(n);
-			//}
-
-			Wl(dpMin[count, 0]);
+			return res;
 		}
+
+		var aa = a.Select(x => ToBa(x)).ToArray();
+		var bb = b.Select(x => ToBa(x)).ToArray();
+
+		var aaa = new List<int>();
+		var bbb = new List<int>();
+		var sums = new List<int>();
+		
+		foreach (var i in Ie(30))
+		{
+			var an = aa.Count(x => x[i]);
+			var bn = bb.Count(x => x[i]);
+			
+			aaa.Add(an);
+			bbb.Add(bn);
+			
+			if (n % 2 == 0 && an == n / 2 && bn == n / 2)
+			{
+				sums.Add(2);
+			}
+			else if (an + bn == n)
+			{
+				sums.Add(1);
+			}
+			else if (an - bn == 0)
+			{
+				sums.Add(0);
+			}
+		}
+		
+		aaa.Dump();
+		bbb.Dump();
+
+		Wl();
 	}
 
 	public class Inputter
 	{
-		//public bool IsDebug { get; } = true;
-		public bool IsDebug { get; } = false;
+		public bool IsDebug { get; } = true;
+		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"1
-900000005000009
+	$@"24
+14911005 70152939 282809711 965900047 168465665 337027481 520073861 20800623 934711525 944543101 522277111 580736275 468493313 912814743 99651737 439502451 365446123 198473587 285587229 253330309 591640417 761745547 247947767 750367481
+805343020 412569406 424258892 329301584 123050452 1042573510 1073384116 495212986 158432830 145726540 623594202 836660574 380872916 722447664 230460104 718360386 620079272 109804454 60321058 38178640 475708360 207775930 393038502 310271010
 
 ";
 
@@ -260,6 +243,11 @@ static class Program
 		{
 			ca.Insert(0, (num % (1 << (i + 1))).ToString().ToCharArray().First());
 			num = num >> 1;
+		}
+		
+		foreach (var j in Ie(30 - ca.Count()))
+		{
+			ca.Insert(0, '0');
 		}
 
 		return new String(ca.ToArray());

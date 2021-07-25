@@ -16,72 +16,54 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var t = inputter.GetNext().ToInt();
-		var l = Ie(t).Select(x => inputter.GetNext().ToLong()).ToArray();
+		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
+		var n = inp[0];
+		var k = inp[1];
+		var l = Ie(k).Select(x => inputter.GetNext().Split().ToArray()).ToArray();
 		
-		//debug
-		//l = Ie(1000).Select(x => rand.Next() % 1000000000000000000).ToArray();
-
-		foreach (var n in l)
+		var list = new List<int>[n];
+		var must = new int[n];
+		
+		foreach (var i in Ie(n))
 		{
-			var ca = n.ToString().ToCharArray().Reverse().ToArray();
-			var count = ca.Length;
-
-			// 桁目、繰り上がる桁数
-			var dpMin = new int[count + 1, 10];
-			var dpMax = new int[count + 1, 10];
-
-			foreach (var i in Ie(count + 1))
-			{
-				foreach (var j in Ie(10))
-				{
-					dpMin[i, j] = 101;
-					dpMax[i, j] = 0;
-				}
-			}
-
-			dpMin[0, 0] = 0;
-			dpMax[0, 0] = 100;
-
-			foreach (var i in Ie(1, count))
-			{
-				var keta = ca[i - 1].ToInt();
-
-				// 前項の繰り上がる桁数
-				foreach (var j in Ie(10))
-				{
-					var min = dpMin[i - 1, j];
-					var max = dpMax[i - 1, j];
-
-					if (min == 101) continue;
-
-					// この項の繰り上がる桁数
-					foreach (var k in Ie(10))
-					{
-						var num = k * 10 + keta + j;
-
-						var nmax = num;
-						var nmin = (int)Math.Ceiling(num / 3d);
-
-						if (nmin > nmax || nmax == 0) continue;
-						if (nmin > max) continue;
-
-						dpMin[i, k] = Math.Min(Math.Max(min, nmin), dpMin[i, k]);
-						dpMax[i, k] = Math.Max(Math.Min(max, nmax), dpMax[i, k]);
-					}
-				}
-			}
-
-			//dpMin.Dump();
-			//dpMax.Dump();
-
-			//if (dpMin[count, 0] == 5)
-			//{
-			//	Wl(n);
-			//}
-
-			Wl(dpMin[count, 0]);
+			list[i] = new List<int>();
 		}
+		
+		foreach (var i in Ie(1, k))
+		{
+			var strl = l[i - 1];
+			
+			var lr = strl[0];
+			var num = strl[1].ToInt();
+			
+			foreach (var j in Ie(n))
+			{
+				if (((lr.Equals("L") && j == num - 1) || (lr.Equals("R") && j == num - 1)))
+				{
+					must[j] = i;
+				}
+				else if ((lr.Equals("L") && j > num - 1) ||
+					(lr.Equals("R") && j < num - 1))
+				{
+					list[j].Add(i);
+				}
+			}
+		}
+		
+		//must.Dump();
+		//
+		//list.Dump();
+		
+		var result = 1L;
+		
+		foreach (var i in Ie(n))
+		{
+			if (must[i] != 0) continue;
+			
+			result = (result * list[i].Count()) % M;
+		}
+
+		Wl(result);
 	}
 
 	public class Inputter
@@ -90,8 +72,17 @@ static class Program
 		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"1
-900000005000009
+	$@"30 10
+R 6
+R 8
+R 7
+R 25
+L 26
+L 13
+R 14
+L 11
+L 23
+R 30
 
 ";
 
@@ -124,7 +115,7 @@ static class Program
 		}
 	}
 
-	const int M = 1000000007;
+	const int M = 998244353;
 
 	// 順列
 	static long nPk(long n, long k)

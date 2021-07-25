@@ -16,82 +16,44 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var t = inputter.GetNext().ToInt();
-		var l = Ie(t).Select(x => inputter.GetNext().ToLong()).ToArray();
+		var n = inputter.GetNext().ToInt();
+		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
 		
 		//debug
-		//l = Ie(1000).Select(x => rand.Next() % 1000000000000000000).ToArray();
-
-		foreach (var n in l)
+		//l = Ie(50).Select(x => Ie(2).Select(y => rand.Next() % 1000000000).ToArray()).ToArray();
+		
+		var pfs = l.Select(x => x.Select(y => GetPrimeFactors(y).ToArray())).ToArray();
+		
+		var nums = pfs.SelectMany(x => x.SelectMany(y => y).ToArray()).Distinct().OrderByDescending(x => x).ToArray();
+		var cpfs = pfs.Select(x => x.SelectMany(y => y).ToArray()).ToArray();
+		
+		var reds = new List<long>();
+		
+		foreach (var i in nums)
 		{
-			var ca = n.ToString().ToCharArray().Reverse().ToArray();
-			var count = ca.Length;
-
-			// 桁目、繰り上がる桁数
-			var dpMin = new int[count + 1, 10];
-			var dpMax = new int[count + 1, 10];
-
-			foreach (var i in Ie(count + 1))
+			if (pfs.All(x => x.Any(y => y.Contains(i))))
 			{
-				foreach (var j in Ie(10))
-				{
-					dpMin[i, j] = 101;
-					dpMax[i, j] = 0;
-				}
+				reds.Add(i);
 			}
-
-			dpMin[0, 0] = 0;
-			dpMax[0, 0] = 100;
-
-			foreach (var i in Ie(1, count))
-			{
-				var keta = ca[i - 1].ToInt();
-
-				// 前項の繰り上がる桁数
-				foreach (var j in Ie(10))
-				{
-					var min = dpMin[i - 1, j];
-					var max = dpMax[i - 1, j];
-
-					if (min == 101) continue;
-
-					// この項の繰り上がる桁数
-					foreach (var k in Ie(10))
-					{
-						var num = k * 10 + keta + j;
-
-						var nmax = num;
-						var nmin = (int)Math.Ceiling(num / 3d);
-
-						if (nmin > nmax || nmax == 0) continue;
-						if (nmin > max) continue;
-
-						dpMin[i, k] = Math.Min(Math.Max(min, nmin), dpMin[i, k]);
-						dpMax[i, k] = Math.Max(Math.Min(max, nmax), dpMax[i, k]);
-					}
-				}
-			}
-
-			//dpMin.Dump();
-			//dpMax.Dump();
-
-			//if (dpMin[count, 0] == 5)
-			//{
-			//	Wl(n);
-			//}
-
-			Wl(dpMin[count, 0]);
 		}
+		
+		reds.Dump();
+
+		Wl();
 	}
 
 	public class Inputter
 	{
-		//public bool IsDebug { get; } = true;
-		public bool IsDebug { get; } = false;
+		public bool IsDebug { get; } = true;
+		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"1
-900000005000009
+	$@"5
+148834018 644854700
+947642099 255192490
+35137537 134714230
+944287156 528403260
+68656286 200621680
 
 ";
 
