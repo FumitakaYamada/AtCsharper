@@ -16,23 +16,44 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var n = inp[0];
+		var l = inp[1];
+		var r = inp[2];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
 
-		Wl();
+		var dpp = new int[200000, 3];
+
+		dpp[0, 0] = l;
+		dpp[0, 1] = a[0];
+		dpp[0, 2] = r;
+
+		foreach (var i in Enumerable.Range(1, n - 1))
+		{
+			dpp[i, 0] = dpp[i - 1, 0] + l;
+
+			dpp[i, 1] = Math.Min(dpp[i, 0], dpp[i - 1, 1] + a[i]);
+			
+			dpp[i, 2] = Math.Min(dpp[i, 1], dpp[i - 1, 2] + r);
+		}
+
+		var min = int.MaxValue;
+
+		min = Math.Min(min, dpp[n - 1, 0]);
+		min = Math.Min(min, dpp[n - 1, 1]);
+		min = Math.Min(min, dpp[n - 1, 2]);
+
+		Wl(min);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"10 -5 -3
+9 -6 10 -1 2 10 -1 7 -15 5
 ";
 
 		private int _index = 0;
@@ -402,17 +423,6 @@ public static class Extension
 	public static PriorityQueue<T> ToPriorityQueue<T>(this IEnumerable<T> source, bool isDescending = true)
 	{
 		var queue = new PriorityQueue<T>(isDescending);
-		foreach (var item in source)
-		{
-			queue.Enqueue(item);
-		}
-
-		return queue;
-	}
-
-	public static PriorityQueue<TKey, TSource> ToPriorityQueue<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool isDescending = true)
-	{
-		var queue = new PriorityQueue<TKey, TSource>(keySelector, isDescending);
 		foreach (var item in source)
 		{
 			queue.Enqueue(item);

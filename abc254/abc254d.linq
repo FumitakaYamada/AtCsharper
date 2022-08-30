@@ -16,14 +16,19 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		
+		6x6
+		
+		36
+		
+		1x36
+		2x18
+		3x12
+		4x9
+		6x6
 
-		Wl();
+		Wl(n);
 	}
 
 	public class Inputter
@@ -32,7 +37,7 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"254
 ";
 
 		private int _index = 0;
@@ -402,17 +407,6 @@ public static class Extension
 	public static PriorityQueue<T> ToPriorityQueue<T>(this IEnumerable<T> source, bool isDescending = true)
 	{
 		var queue = new PriorityQueue<T>(isDescending);
-		foreach (var item in source)
-		{
-			queue.Enqueue(item);
-		}
-
-		return queue;
-	}
-
-	public static PriorityQueue<TKey, TSource> ToPriorityQueue<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool isDescending = true)
-	{
-		var queue = new PriorityQueue<TKey, TSource>(keySelector, isDescending);
 		foreach (var item in source)
 		{
 			queue.Enqueue(item);

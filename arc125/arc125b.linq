@@ -16,12 +16,12 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var n = inputter.GetNext().ToLong();
+		
+		foreach (var i in Ie((n / 2) + 1))
+		{
+			if (i * 2 + 1)
+		}
 
 		Wl();
 	}
@@ -32,7 +32,8 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"10
+
 ";
 
 		private int _index = 0;
@@ -64,7 +65,7 @@ static class Program
 		}
 	}
 
-	const int M = 1000000007;
+	const int M = 998244353;
 
 	// 順列
 	static long nPk(long n, long k)

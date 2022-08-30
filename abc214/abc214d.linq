@@ -16,14 +16,86 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var l = Ie(n - 1).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).Select(x => new int[] { Math.Min(x[0] - 1, x[1] - 1), Math.Max(x[0] - 1, x[1] - 1), x[2] }).ToArray();
+		
+		var pathDic = new Dictionary<int, List<int>>();
+		var levelDic = new Dictionary<int, int>();
+		
+		foreach (var i in Ie(n))
+		{
+			pathDic.Add(i, new List<int>());
+		}
 
-		Wl();
+		foreach (var i in l)
+		{
+			pathDic[i[0]].Add(i[1]);
+			pathDic[i[1]].Add(i[0]);
+		}
+
+		var queue = new Queue<int>();
+		var went = new bool[n];
+
+		queue.Enqueue(0);
+		levelDic[0] = 0;
+		went[0] = true;
+		
+		while (queue.Any())
+		{
+			var next = queue.Dequeue();
+
+			foreach (var i in pathDic[next])
+			{
+				if (went[i]) continue;
+				went[i] = true;
+				
+				queue.Enqueue(i);
+				levelDic[i] = levelDic[next] + 1;
+			}
+		}
+
+		var childs = new int[n];
+
+		int GetChildCount(int node)
+		{
+			if (childs[node] != 0) return childs[node];
+			
+			var cc = pathDic[node].Where(x => levelDic[node] < levelDic[x]).Select(x => GetChildCount(x)).Sum() + 1;
+			
+			childs[node] = cc;
+			
+			return cc;
+		}
+
+		levelDic.Dump();
+		childs.Dump();
+
+		var sum = 0L;
+
+		foreach (var path in l)
+		{
+			var adult = 0;
+			var kid = 0;
+			if (levelDic[path[0]] < levelDic[path[1]])
+			{
+				adult = path[0];
+				kid = path[1];
+			}
+			else
+			{
+				adult = path[1];
+				kid = path[0];
+			}
+			
+			var knc = GetChildCount(kid);
+			var count = (n - knc) * knc;
+			var weight = path[2];
+			
+			sum += (count * weight);
+		}
+		
+
+		Wl(sum);
 	}
 
 	public class Inputter
@@ -32,7 +104,11 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"5
+1 2 1
+2 3 2
+4 2 5
+3 5 14
 ";
 
 		private int _index = 0;

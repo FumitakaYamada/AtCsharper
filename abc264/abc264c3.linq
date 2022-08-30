@@ -13,36 +13,205 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
+	static int debug = 2;
+
+	static void Function(Inputter inputter)
+	{
+		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
+		var h = inp[0];
+		var w = inp[1];
+		var l = Ie(h).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var inp2 = inputter.GetNext().Split().Select(ToInt).ToArray();
+		var h2 = inp2[0];
+		var w2 = inp2[1];
+		var l2 = Ie(h2).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+
+		var deleteRow = new List<int>();
+		var deleteColumn = new List<int>();
+		
+		var current = 0;
+		
+		var aa = l2.SelectMany(x=>x).ToArray();
+		
+		var success = false;
+
+		void dfs()
+		{
+			if (deleteRow.Count() + deleteColumn.Count() > 
+			
+			if (current > h+w)
+			{
+				var index = 0;
+				
+				foreach (var i in Ie(h))
+				{
+					foreach (var j in Ie(w))
+					{
+						if (!deleteRow.Contains(i) && !deleteColumn.Contains(j))
+						{
+							if (index >= aa.Length)
+							{
+								return;
+							}
+							
+							if (aa[index] != l[i][j])
+							{
+								return;
+							}
+							index++;
+						}
+					}
+				}
+				
+				if (index == aa.Length)
+				{
+					success = true;
+				}
+				
+				return;
+			}
+			
+			if (current >= h)
+			{
+				var j = current - h;
+
+				deleteColumn.Add(j);
+				current++;
+				dfs();
+				current--;
+				deleteColumn.Remove(j);
+
+				current++;
+				dfs();
+				current--;
+			}
+			else
+			{
+				deleteRow.Add(current);
+				current++;
+				dfs();
+				current--;
+				deleteRow.Remove(current);
+
+				current++;
+				dfs();
+				current--;
+			}
+		}
+		
+		dfs();
+
+		Wl(success ? "Yes" : "No");
+	}
+
 	static void Main()
 	{
-		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
-
-		Wl();
+		if (debug == 1)
+		{
+			foreach (var i in Ie(1, Inputter.GetCount()))
+			{
+				var inputter = new Inputter()
+				{
+					Num = i,
+				};
+				Function(inputter);
+			}
+		}
+		else
+		{
+			Function(new Inputter());
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		public int Num { get; set; } = 1;
 
-		public static string _str =
-	$@"
+		public static string _str1 =
+	$@"4 5
+1 2 3 4 5
+6 7 8 9 10
+11 12 13 14 15
+16 17 18 19 20
+2 3
+6 8 9
+16 18 19
 ";
+		public static string _str2 =
+	$@"3 3
+1 1 1
+1 1 1
+1 1 1
+1 1
+2
+";
+		public static string _str3 =
+	$@"4 5
+1 2 3 4 5
+6 7 8 8 8
+11 12 13 14 15
+16 17 18 19 20
+2 3
+6 8 8
+16 18 19
+";
+		public static string _str4 =
+	$@"4 5
+1 2 3 4 5
+6 7 8 9 10
+11 12 13 14 15
+16 17 18 19 20
+2 3
+6 8 9
+16 18 19
+";
+		public static string _str5 =
+	$@"4 4
+1 1 1 1
+1 1 1 1
+1 2 1 1
+1 1 1 1
+2 3
+1 1 1
+1 1 2
+";
+
+		public static int GetCount()
+		{
+			if (_str1.Length <= 2)
+			{
+				debug = 0;
+				return 1;
+			}
+			if (_str2.Length <= 2)
+			{
+				return 1;
+			}
+			if (_str3.Length <= 2)
+			{
+				return 2;
+			}
+			if (_str4.Length <= 2)
+			{
+				return 3;
+			}
+			if (_str5.Length <= 2)
+			{
+				return 4;
+			}
+			return 5;
+		}
 
 		private int _index = 0;
 		private string[] lines = null;
 
 		private string[] GetLines()
 		{
+			var strs = new [] { _str1, _str2, _str3, _str4, _str5 };
+			
 			if (lines == null)
 			{
-				lines = _str.Split("\n")
+				lines = strs[Num - 1].Split("\n")
 					.Select(x => x.Replace("\n", "").Replace("\r", ""))
 					.ToArray();
 			}
@@ -51,7 +220,7 @@ static class Program
 
 		public string GetNext()
 		{
-			if (IsDebug)
+			if (debug == 1)
 			{
 				var str = GetLines()[_index];
 				_index++;
@@ -402,17 +571,6 @@ public static class Extension
 	public static PriorityQueue<T> ToPriorityQueue<T>(this IEnumerable<T> source, bool isDescending = true)
 	{
 		var queue = new PriorityQueue<T>(isDescending);
-		foreach (var item in source)
-		{
-			queue.Enqueue(item);
-		}
-
-		return queue;
-	}
-
-	public static PriorityQueue<TKey, TSource> ToPriorityQueue<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool isDescending = true)
-	{
-		var queue = new PriorityQueue<TKey, TSource>(keySelector, isDescending);
 		foreach (var item in source)
 		{
 			queue.Enqueue(item);

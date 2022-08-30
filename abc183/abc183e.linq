@@ -16,14 +16,53 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var h = inp[0];
+		var w = inp[1];
+		var l = Ie(h).Select(x => inputter.GetNext().ToCharArray().Select(x => x.Equals('.')).ToArray()).ToArray();
 
-		Wl();
+		var dp = new int[h, w];
+		dp[0, 0] = 1;
+		
+		var queue = new Queue<int[]>();
+		
+		queue.Enqueue(new int[] { 0, 0 });
+		
+		while (queue.Any())
+		{
+			var point = queue.Dequeue();
+			var hp = point[0];
+			var wp = point[1];
+
+			// down
+			foreach (var i in Ie(1, h - hp - 1))
+			{
+				if (!l[hp + i][wp]) break;
+				dp[hp + i, wp] += dp[hp, wp];
+			}
+			
+			// naname
+			foreach (var i in Ie(1, Math.Min(h - hp - 1, w - wp - 1)))
+			{
+				if (!l[hp + i][wp + i]) break;
+				dp[hp + i, wp + i] += dp[hp, wp];
+			}
+
+			// right
+			foreach (var i in Ie(1, w - wp - 1))
+			{
+				if (!l[hp][wp + i]) break;
+				dp[hp, wp + i] += dp[hp, wp];
+			}
+
+			if (hp < h - 1 && l[hp + 1][wp]) if (!queue.Any(x => x[0] == hp + 1 && x[1] == wp)) queue.Enqueue(new int[] { hp + 1, wp });
+			if (hp < h - 1 && wp < w - 1 && l[hp + 1][wp + 1]) if (!queue.Any(x => x[0] == hp + 1 && x[1] == wp + 1)) queue.Enqueue(new int[] { hp + 1, wp + 1 });
+			if (wp < w - 1 && l[hp][wp + 1]) if (!queue.Any(x => x[0] == hp && x[1] == wp + 1)) queue.Enqueue(new int[] { hp, wp + 1 });
+		}
+
+		//dp.Dump();
+		
+		Wl(dp[h - 1, w - 1]);
 	}
 
 	public class Inputter
@@ -32,7 +71,11 @@ static class Program
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"3 3
+...
+.#.
+...
+
 ";
 
 		private int _index = 0;

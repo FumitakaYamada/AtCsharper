@@ -16,23 +16,51 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var n = inp[0];
+		var k = inp[1];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		var ll = new List<int[]>();
+		
+		foreach (var i in Ie(k))
+		{
+			var indexes = Ie((int)Math.Ceiling((n - i) / (float)k))
+				.Select(x => i + x * k)
+				.ToArray();
+			
+			var numbers = indexes
+				.Select(x => a[x])
+				.OrderBy(x => x)
+				.ToArray();
+				
+			ll.Add(numbers);
+		}
 
-		Wl();
+		var min = 0;
+		foreach (var i in Ie(n))
+		{
+			var nums = ll[i % k];
+			var next = nums[i / k];
+			if (min > next)
+			{
+				Wl("No");
+				return;
+			}
+			min = next;
+		}
+
+		Wl("Yes");
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 		//public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"5 2
+3 4 1 3 4
 ";
 
 		private int _index = 0;
@@ -402,17 +430,6 @@ public static class Extension
 	public static PriorityQueue<T> ToPriorityQueue<T>(this IEnumerable<T> source, bool isDescending = true)
 	{
 		var queue = new PriorityQueue<T>(isDescending);
-		foreach (var item in source)
-		{
-			queue.Enqueue(item);
-		}
-
-		return queue;
-	}
-
-	public static PriorityQueue<TKey, TSource> ToPriorityQueue<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool isDescending = true)
-	{
-		var queue = new PriorityQueue<TKey, TSource>(keySelector, isDescending);
 		foreach (var item in source)
 		{
 			queue.Enqueue(item);

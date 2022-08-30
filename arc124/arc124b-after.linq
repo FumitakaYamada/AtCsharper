@@ -16,23 +16,47 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var n = inputter.GetNext().ToLong();
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var b = inputter.GetNext().Split().Select(ToLong).OrderBy(x => x).ToArray();
+		
+		var xx = b.Select(x => x ^ a.First()).ToArray();
+		
+		var results = new List<long>();
+		
+		foreach (var xKouho in xx)
+		{
+			var cc = a.Select(x => x ^ xKouho).OrderBy(x => x).ToArray();
+			
+			foreach (var i in Ie(n))
+			{
+				if (b[i] == cc[i]) continue;
+				goto ng;
+			}
+			
+			results.Add(xKouho);
+			
+			ng:;
+		}
 
-		Wl();
+		Wl(results.Count());
+		
+		foreach (var res in results.OrderBy(x => x))
+		{
+			Wl(res);
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"24
+14911005 70152939 282809711 965900047 168465665 337027481 520073861 20800623 934711525 944543101 522277111 580736275 468493313 912814743 99651737 439502451 365446123 198473587 285587229 253330309 591640417 761745547 247947767 750367481
+805343020 412569406 424258892 329301584 123050452 1042573510 1073384116 495212986 158432830 145726540 623594202 836660574 380872916 722447664 230460104 718360386 620079272 109804454 60321058 38178640 475708360 207775930 393038502 310271010
+
 ";
 
 		private int _index = 0;
@@ -201,6 +225,11 @@ static class Program
 			ca.Insert(0, (num % (1 << (i + 1))).ToString().ToCharArray().First());
 			num = num >> 1;
 		}
+		
+		foreach (var j in Ie(30 - ca.Count()))
+		{
+			ca.Insert(0, '0');
+		}
 
 		return new String(ca.ToArray());
 	}
@@ -220,22 +249,6 @@ static class Program
 		return result;
 	}
 
-	public static IEnumerable<long> GetDivisors(this int num) => GetDivisors((long)num);
-	public static IEnumerable<long> GetDivisors(this long num)
-	{
-		if (num < 1) yield break;
-
-		for (long i = 1; i * i <= num; i++)
-		{
-			if (num % i == 0)
-			{
-				yield return i;
-				if (i * i != num) yield return (num / i);
-			}
-		}
-	}
-
-	public static IEnumerable<long> GetPrimeFactors(this int num) => GetPrimeFactors((long)num);
 	public static IEnumerable<long> GetPrimeFactors(this long n)
 	{
 		var i = 2L;
@@ -252,11 +265,6 @@ static class Program
 		if (tmp != 1L) yield return tmp;
 	}
 
-	public static long GetLcm(long a, long b)
-	{
-		return a * b / GetGcd(a, b);
-	}
-	
 	public static long GetGcd(this long a, long b)
 	{
 		var r = a % b;

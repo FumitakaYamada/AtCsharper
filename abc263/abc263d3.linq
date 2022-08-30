@@ -13,26 +13,71 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
+
+	static int debug = 1;
+
+	static void Function(Inputter inputter)
+	{
+		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
+		var n = inp[0];
+		var l = inp[1];
+		var r = inp[2];
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+
+		var dp = new int[n+2, 3];
+		var aa = new int[n+2];
+
+		foreach (var i in Ie(1, n))
+		{
+			aa[i] = aa[i - 1] + a[i - 1];
+		}
+
+		foreach (var i in Ie(1, n))
+		{
+			dp[i, 0] = dp[i - 1, 0] + l;
+			dp[i, 1] = Math.Min(dp[i - 1, 0] + a[i - 1], aa[i - 1] + a[i - 1]);
+			dp[i, 2] = Math.Min(dp[i - 1, 1] + r, dp[i - 1, 2] + r);
+		}
+
+		dp.Dump();
+
+		Wl(Math.Min(Math.Min(dp[n, 0], dp[n, 1]), dp[n, 2]));
+	}
+
 	static void Main()
 	{
-		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
-
-		Wl();
+		if (debug == 1)
+		{
+			foreach (var i in Ie(1, 3))
+			{
+				var inputter = new Inputter()
+				{
+					Num = i,
+				};
+				Function(inputter);
+			}
+		}
+		else
+		{
+			Function(new Inputter());
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		public int Num { get; set; } = 1;
 
-		public static string _str =
-	$@"
+		public static string _str1 =
+	$@"5 4 3
+5 5 0 6 3
+";
+		public static string _str2 =
+	$@"4 10 10
+1 2 3 4
+";
+		public static string _str3 =
+	$@"10 -5 -3
+9 -6 10 -1 2 10 -1 7 -15 5
 ";
 
 		private int _index = 0;
@@ -40,9 +85,11 @@ static class Program
 
 		private string[] GetLines()
 		{
+			var strs = new[] { _str1, _str2, _str3 };
+
 			if (lines == null)
 			{
-				lines = _str.Split("\n")
+				lines = strs[Num - 1].Split("\n")
 					.Select(x => x.Replace("\n", "").Replace("\r", ""))
 					.ToArray();
 			}
@@ -51,7 +98,7 @@ static class Program
 
 		public string GetNext()
 		{
-			if (IsDebug)
+			if (debug == 1)
 			{
 				var str = GetLines()[_index];
 				_index++;
@@ -63,7 +110,7 @@ static class Program
 			}
 		}
 	}
-
+	
 	const int M = 1000000007;
 
 	// 順列
@@ -402,17 +449,6 @@ public static class Extension
 	public static PriorityQueue<T> ToPriorityQueue<T>(this IEnumerable<T> source, bool isDescending = true)
 	{
 		var queue = new PriorityQueue<T>(isDescending);
-		foreach (var item in source)
-		{
-			queue.Enqueue(item);
-		}
-
-		return queue;
-	}
-
-	public static PriorityQueue<TKey, TSource> ToPriorityQueue<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool isDescending = true)
-	{
-		var queue = new PriorityQueue<TKey, TSource>(keySelector, isDescending);
 		foreach (var item in source)
 		{
 			queue.Enqueue(item);

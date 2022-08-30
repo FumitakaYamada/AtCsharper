@@ -13,36 +13,171 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	static void Main()
+	static int debug = 1;
+	
+	static void Function(Inputter inputter)
 	{
-		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var sx = inp[0];
+		var sy = inp[1];
+		var tx = inp[2];
+		var ty = inp[3];
 		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		
+		var pathes = new Dictionary<int, bool>();
+		
+		var went = new List<int>();
+		
+		foreach (var i in Ie(n))
+		{
+			foreach (var j in Ie(n))
+			{
+				var dist = GetDistance(l[i][0], l[i][1], l[j][0], l[j][1]);
+				
+				if (i != j && dist <= Math.Abs(l[i][2] + l[j][2]) && dist >= Math.Abs(l[i][2] - l[j][2]))
+				{
+					pathes.Add(i * n + j, true);
+				}
+				else
+				{
+					pathes.Add(i * n + j, false);
+				}
+			}
+		}
 
-		Wl();
+		var goals = new List<int>();
+
+		foreach (var i in Ie(n))
+		{
+			if (Hits(GetDistance(l[i][0], l[i][1], tx, ty) - l[i][2]))
+				goals.Add(i);
+		}
+
+		var starts = new List<int>();
+
+		foreach (var i in Ie(n))
+		{
+			if (Hits(GetDistance(l[i][0], l[i][1], sx, sy) - l[i][2]))
+				starts.Add(i);
+		}
+
+		//pathes.Dump();
+		//starts.Dump();
+		//goals.Dump();
+		
+		var canGo = starts;
+		
+		while (starts.Any())
+		{
+			starts = canGo
+				.SelectMany(x => Ie(n)
+					.Where(y => pathes[x * n + y]))
+				.Where(x => !canGo.Contains(x))
+				.ToList();
+				
+			canGo.AddRange(starts);
+		}
+		
+		Wl(canGo.Any(x => goals.Contains(x)) ? "Yes" : "No");
+	}
+
+	static bool Hits(double value)
+	{
+		return value < 0.0001 && value > -0.0001;
+	}
+	
+	static double GetDistance(int x1, int y1, int x2, int y2)
+	{
+		var dx = x1 - x2;
+		var dy = y1 - y2;
+		return Math.Sqrt(Math.Pow(x1 - x2, 2), Math.Pow(y1 - y2, 2));
+	}
+
+	static void Main()
+	{
+		if (debug == 1)
+		{
+			foreach (var i in Ie(1, Inputter.GetCount()))
+			{
+				var inputter = new Inputter()
+				{
+					Num = i,
+				};
+				Function(inputter);
+			}
+		}
+		else
+		{
+			Function(new Inputter());
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		public int Num { get; set; } = 1;
 
-		public static string _str =
+		public static string _str1 =
+	$@"4
+0 -2 3 3
+0 0 2
+2 0 2
+2 3 1
+-3 3 3
+";
+		public static string _str2 =
+	$@"3
+0 1 0 3
+0 0 1
+0 0 2
+0 0 3
+";
+		public static string _str3 =
 	$@"
 ";
+		public static string _str4 =
+	$@"
+";
+		public static string _str5 =
+	$@"
+";
+
+		public static int GetCount()
+		{
+			if (_str1.Length <= 2)
+			{
+				debug = 0;
+				return 1;
+			}
+			if (_str2.Length <= 2)
+			{
+				return 1;
+			}
+			if (_str3.Length <= 2)
+			{
+				return 2;
+			}
+			if (_str4.Length <= 2)
+			{
+				return 3;
+			}
+			if (_str5.Length <= 2)
+			{
+				return 4;
+			}
+			return 5;
+		}
 
 		private int _index = 0;
 		private string[] lines = null;
 
 		private string[] GetLines()
 		{
+			var strs = new [] { _str1, _str2, _str3, _str4, _str5 };
+			
 			if (lines == null)
 			{
-				lines = _str.Split("\n")
+				lines = strs[Num - 1].Split("\n")
 					.Select(x => x.Replace("\n", "").Replace("\r", ""))
 					.ToArray();
 			}
@@ -51,7 +186,7 @@ static class Program
 
 		public string GetNext()
 		{
-			if (IsDebug)
+			if (debug == 1)
 			{
 				var str = GetLines()[_index];
 				_index++;
@@ -402,17 +537,6 @@ public static class Extension
 	public static PriorityQueue<T> ToPriorityQueue<T>(this IEnumerable<T> source, bool isDescending = true)
 	{
 		var queue = new PriorityQueue<T>(isDescending);
-		foreach (var item in source)
-		{
-			queue.Enqueue(item);
-		}
-
-		return queue;
-	}
-
-	public static PriorityQueue<TKey, TSource> ToPriorityQueue<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool isDescending = true)
-	{
-		var queue = new PriorityQueue<TKey, TSource>(keySelector, isDescending);
 		foreach (var item in source)
 		{
 			queue.Enqueue(item);

@@ -16,23 +16,55 @@ static class Program
 	static void Main()
 	{
 		var inputter = new Inputter();
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
 		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		
+		//debug
+		//l = Ie(50).Select(x => Ie(2).Select(y => rand.Next() % 1000000000).ToArray()).ToArray();
+		
+		var xys = l.First().Select(x => x.GetDivisors().OrderBy(y => y).ToArray()).ToArray();
+		
+		var xs = xys[0];
+		var ys = xys[1];
+		
+		var max = 0L;
+		
+		foreach (var i in xs)
+		{
+			foreach (var j in ys)
+			{
+				var lcm = GetLcm(i, j);
+				if (lcm <= max) continue;
 
-		Wl();
+				foreach (var k in l.Skip(1))
+				{
+					if (k[0] % i == 0 && k[1] % j == 0) continue;
+					if (k[0] % j == 0 && k[1] % i == 0) continue;
+					goto ng;
+				}
+
+				max = lcm;
+
+				ng:;
+			}
+		}
+		
+		Wl(max);
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		//public bool IsDebug { get; } = true;
+		public bool IsDebug { get; } = false;
 
 		public static string _str =
-	$@"
+	$@"5
+148834018 644854700
+947642099 255192490
+35137537 134714230
+944287156 528403260
+68656286 200621680
+
 ";
 
 		private int _index = 0;
@@ -115,7 +147,7 @@ static class Program
 	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 	public static void RemoveLast<T>(this List<T> list) => list.RemoveAt(list.Count() - 1);
 	public static double GetEuclidDistance(double x1, double x2, double y1, double y2) => Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
-	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetGcd);
+	public static long GetGcd(this IEnumerable<long> numbers) => numbers.Aggregate(GetLcm);
 	public static SortedDictionary<TKey, TElement> ToSortedDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector) where TKey : notnull => new SortedDictionary<TKey, TElement>(source.ToDictionary(keySelector, elementSelector, null));
 	public static void AddOrCreate<TKey, TElement>(this Dictionary<TKey, List<TElement>> dic, TKey key, TElement value)
 	{
@@ -219,20 +251,20 @@ static class Program
 		}
 		return result;
 	}
-
+	
 	public static IEnumerable<long> GetDivisors(this int num) => GetDivisors((long)num);
 	public static IEnumerable<long> GetDivisors(this long num)
 	{
-		if (num < 1) yield break;
+	    if (num < 1) yield break;
 
-		for (long i = 1; i * i <= num; i++)
-		{
-			if (num % i == 0)
-			{
-				yield return i;
-				if (i * i != num) yield return (num / i);
-			}
-		}
+	    for (long i = 1; i * i <= num; i++)
+	    {
+	        if (num % i == 0)
+	        {
+	            yield return i;
+	            if (i * i != num) yield return (num / i);
+	        }
+	    }
 	}
 
 	public static IEnumerable<long> GetPrimeFactors(this int num) => GetPrimeFactors((long)num);
@@ -256,7 +288,7 @@ static class Program
 	{
 		return a * b / GetGcd(a, b);
 	}
-	
+
 	public static long GetGcd(this long a, long b)
 	{
 		var r = a % b;

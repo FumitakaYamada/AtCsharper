@@ -13,36 +13,123 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	static void Main()
+	static int debug = 2;
+	
+	static void Function(Inputter inputter)
 	{
-		var inputter = new Inputter();
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
+		var n = inp[0];
+		var z = inp[1];
 		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
 
-		Wl();
+		var res = new ulong[n];
+		
+		res[0] = (ulong)l[0][0] + (ulong)z * (ulong)l[0][1];
+		
+		foreach (var i in Ie(1, n - 1))
+		{
+			var count = z - i;
+			if (count <= 0)
+			{
+				res[i] = ulong.MaxValue;
+				continue;
+			}
+			res[i] = res[i-1] + (ulong)l[i][0] + (ulong)(l[i][1] - l[i-1][1]) * (ulong)count;
+		}
+		
+		//res.Dump();
+		
+		Wl(res.Min());
+	}
+
+	static void Main()
+	{
+		if (debug == 1)
+		{
+			foreach (var i in Ie(1, Inputter.GetCount()))
+			{
+				var inputter = new Inputter()
+				{
+					Num = i,
+				};
+				Function(inputter);
+			}
+		}
+		else
+		{
+			Function(new Inputter());
+		}
 	}
 
 	public class Inputter
 	{
-		public bool IsDebug { get; } = true;
-		//public bool IsDebug { get; } = false;
+		public int Num { get; set; } = 1;
 
-		public static string _str =
+		public static string _str1 =
+	$@"3 4
+3 4
+2 3
+4 2
+";
+		public static string _str2 =
+	$@"10 4
+3 3
+1 6
+4 7
+1 8
+5 7
+9 9
+2 4
+6 4
+5 1
+3 1
+";
+		public static string _str3 =
 	$@"
 ";
+		public static string _str4 =
+	$@"
+";
+		public static string _str5 =
+	$@"
+";
+
+		public static int GetCount()
+		{
+			if (_str1.Length <= 2)
+			{
+				debug = 0;
+				return 1;
+			}
+			if (_str2.Length <= 2)
+			{
+				return 1;
+			}
+			if (_str3.Length <= 2)
+			{
+				return 2;
+			}
+			if (_str4.Length <= 2)
+			{
+				return 3;
+			}
+			if (_str5.Length <= 2)
+			{
+				return 4;
+			}
+			return 5;
+		}
 
 		private int _index = 0;
 		private string[] lines = null;
 
 		private string[] GetLines()
 		{
+			var strs = new [] { _str1, _str2, _str3, _str4, _str5 };
+			
 			if (lines == null)
 			{
-				lines = _str.Split("\n")
+				lines = strs[Num - 1].Split("\n")
 					.Select(x => x.Replace("\n", "").Replace("\r", ""))
 					.ToArray();
 			}
@@ -51,7 +138,7 @@ static class Program
 
 		public string GetNext()
 		{
-			if (IsDebug)
+			if (debug == 1)
 			{
 				var str = GetLines()[_index];
 				_index++;
@@ -402,17 +489,6 @@ public static class Extension
 	public static PriorityQueue<T> ToPriorityQueue<T>(this IEnumerable<T> source, bool isDescending = true)
 	{
 		var queue = new PriorityQueue<T>(isDescending);
-		foreach (var item in source)
-		{
-			queue.Enqueue(item);
-		}
-
-		return queue;
-	}
-
-	public static PriorityQueue<TKey, TSource> ToPriorityQueue<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool isDescending = true)
-	{
-		var queue = new PriorityQueue<TKey, TSource>(keySelector, isDescending);
 		foreach (var item in source)
 		{
 			queue.Enqueue(item);
