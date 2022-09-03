@@ -13,18 +13,37 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var n = inp[0];
+		var l = inp[1];
+		var r = inp[2];
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
 
-		Wl();
+		var dp1 = new long[n + 1];
+		var dp2 = new long[n + 1];
+		
+		foreach (var i in Ie(1,n))
+		{
+			dp1[i] = Min(Min(l*(i-1) + a[i - 1], dp1[i - 1] + a[i - 1]), l*i);
+			
+			dp2[i] = Min(Min(r*(i-1) + a[n-i], dp2[i-1] + a[n-i]), r*i);
+		}
+
+		//dp1.Dump();
+		//dp2.Dump();
+		
+		var min = long.MaxValue;
+		
+		foreach (var i in Ie(n+1))
+		{
+			min = Min(min, dp1[i] + dp2[n-i]);
+		}
+
+		Wl(min);
 	}
 
 	static void Main()
@@ -51,13 +70,16 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"5 4 3
+5 5 0 6 3
 ";
 		public static string _str2 =
-	$@"
+	$@"4 10 10
+1 2 3 4
 ";
 		public static string _str3 =
-	$@"
+	$@"10 -5 -3
+9 -6 10 -1 2 10 -1 7 -15 5
 ";
 		public static string _str4 =
 	$@"

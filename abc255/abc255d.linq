@@ -13,18 +13,45 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
-
-		Wl();
+		var n = inp[0];
+		var q = inp[1];
+		var a = inputter.GetNext().Split().Select(ToLong)
+			.OrderBy(x => x)
+			.ToArray();
+		//var z = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		
+		var sum = new long[n+1];
+		
+		foreach (var i in Ie(1, n))
+		{
+			sum[i] = sum[i-1] + a[i-1];
+		}
+		
+		foreach (var i in Ie(q))
+		{
+			var xx = inputter.GetNext().ToLong();
+			
+			var ac = -1;
+			var wc = n;
+			
+			while (ac + 1 < wc)
+			{
+				var wj = (ac + wc) / 2;
+				
+				if (a[wj] <= xx)
+					ac = wj;
+				else
+					wc = wj;
+			}
+			ac++;
+			
+			Wl(xx * ac - sum[ac] + sum[n] - sum[ac] - xx * (n - ac));
+		}
 	}
 
 	static void Main()
@@ -51,10 +78,20 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"5 3
+6 11 2 5 5
+5
+20
+0
 ";
 		public static string _str2 =
-	$@"
+	$@"10 5
+1000000000 314159265 271828182 141421356 161803398 0 777777777 255255255 536870912 998244353
+555555555
+321654987
+1000000000
+789456123
+0
 ";
 		public static string _str3 =
 	$@"

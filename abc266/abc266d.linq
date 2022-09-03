@@ -13,18 +13,36 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToLong).ToArray()).ToArray();
+		
+		var count = 100005;
 
-		Wl();
+		var map = new long[count, 7];
+		var dp = new long[count, 7];
+		
+		foreach (var x in l)
+		{
+			map[x[0], x[1]+1] = x[2];
+		}
+		var max = 0L;
+		foreach (var i in Ie(1, count - 1))
+		{
+			foreach (var j in Ie(1, 5))
+			{
+				if (j > i + 1) continue;
+				dp[i, j] = Max(Max(dp[i - 1, j - 1], dp[i - 1, j]), dp[i - 1, j + 1]) + map[i, j];
+			}
+		}
+		
+		Wl(Ie(1, 5).Max(x => dp[count-1, x]));
+		
+		//map.Dump();
+		//dp.Dump();
 	}
 
 	static void Main()
@@ -51,13 +69,29 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"3
+1 0 100
+3 3 10
+5 4 1
 ";
 		public static string _str2 =
-	$@"
+	$@"3
+1 4 1
+2 4 1
+3 4 1
 ";
 		public static string _str3 =
-	$@"
+	$@"10
+1 4 602436426
+2 1 623690081
+3 3 262703497
+4 4 628894325
+5 3 450968417
+6 1 161735902
+7 1 707723857
+8 2 802329211
+9 0 317063340
+10 2 125660016
 ";
 		public static string _str4 =
 	$@"

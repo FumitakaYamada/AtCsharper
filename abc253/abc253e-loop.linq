@@ -13,18 +13,65 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var n = inp[0];
+		var m = inp[1];
+		var k = inp[2];
+		
+		var dp = new int[n, m];
+		
+		foreach (var i in Ie(n))
+			foreach (var j in Ie(m))
+				dp[i,j] = -1;
 
-		Wl();
+		foreach (var i in Ie(m))
+			dp[0, i] = 1;
+			
+		foreach (var i in Ie(1, n-1))
+		{
+			foreach (var j in Ie(m))
+			{
+				if (j == 0)
+				{
+					Amount(i, j);
+					continue;
+				}
+
+				dp[i, j] = dp[i, j - 1];
+
+				if (j + k <= m) dp[i, j] -= dp[i - 1, j + k - 1];
+				while (dp[i, j] < 0) dp[i, j] += 998244353;
+				if (j - k >= 0) dp[i, j] += dp[i - 1, j - k];
+				dp[i, j] %= 998244353;
+
+				//if (j + k <= m) dp[i, j]--;
+				//if (j - k >= 0) dp[i, j]++;
+				//
+				//if (dp[i, j] < 0) dp[i, j] += 998244353;
+			}
+		}
+
+		int Amount(int pos, int num)
+		{
+			if (dp[pos, num] != -1) return dp[pos, num];
+			
+			var val = 0;
+			
+			foreach (var i in Ie(m))
+			{
+				if (Math.Abs(num - i) < k) continue;
+				val = (val + Amount(pos - 1, i)) % 998244353;
+			}
+
+			return dp[pos, num] = val;
+		}
+		
+		Wl(Ie(m).Select(x => Amount(n-1, x)).Aggregate((x, y) => (x + y) % 998244353));
+		//dp.Dump();
 	}
 
 	static void Main()
@@ -51,19 +98,19 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"2 3 1
 ";
 		public static string _str2 =
-	$@"
+	$@"3 3 2
 ";
 		public static string _str3 =
-	$@"
+	$@"4 8 3
 ";
 		public static string _str4 =
-	$@"
+	$@"100 1000 500
 ";
 		public static string _str5 =
-	$@"
+	$@"1000 5000 1
 ";
 
 		public static int GetCount()

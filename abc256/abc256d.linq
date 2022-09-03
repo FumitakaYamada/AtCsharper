@@ -13,18 +13,34 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray())
+			.OrderBy(x => x[0])
+			.ToArray();
+		
+		var current = int.MaxValue;
+		var endMax = 0;
+		var prevMax = 0;
+		
+		foreach (var i in Ie(n))
+		{
+			if (l[i][1] <= prevMax) continue;
 
-		Wl();
+			current = Math.Min(l[i][0], current);
+			endMax = Math.Max(l[i][1], endMax);
+
+			if (i == n - 1 || endMax < l[i + 1][0])
+			{
+				prevMax = endMax;
+				Wl(current + " " + prevMax);
+				current = int.MaxValue;
+				continue;
+			}
+		}
 	}
 
 	static void Main()
@@ -51,7 +67,10 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"3
+10 29
+20 30
+40 61
 ";
 		public static string _str2 =
 	$@"
@@ -158,12 +177,6 @@ static class Program
 	public static char GetRandomAlphabetChar() => ("abcdefghijklmnopqrstuvwxyz".ToCharArray()[rand.Next() % 26]);
 	public static string ToSpaceString<T>(this IEnumerable<T> ie) => String.Join(' ', ie.ToArray());
 	public static IEnumerable<long> ToLong(this IEnumerable<int> ie) => ie.Select(x => (long)x);
-	public static int Max(int a, int b) => Math.Max(a, b);
-	public static int Min(int a, int b) => Math.Min(a, b);
-	public static long Max(long a, long b) => Math.Max(a, b);
-	public static long Min(long a, long b) => Math.Min(a, b);
-	public static double Max(double a, double b) => Math.Max(a, b);
-	public static double Min(double a, double b) => Math.Min(a, b);
 	public static long LongSum(this IEnumerable<int> ie) => ie.ToLong().Sum();
 	public static void Wl(object obj = null) => Console.WriteLine(obj);
 	public static long ToLong(this string str) => long.Parse(str);

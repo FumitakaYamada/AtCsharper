@@ -13,18 +13,34 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		
+		var ans = 0;
+		
+		foreach (var i in Ie(1, n))
+		{
+			var k = i;
+			foreach (var j in Ie(2, (int)Math.Sqrt(k)))
+			{
+				while (k % (j * j) == 0) k /= (j * j);
+			}
 
-		Wl();
+			foreach (var j in Ie(1, n))
+			{
+				if (j * j * k <= n)
+				{
+					ans++; 
+					//$"{i}, {j*j*k}".Dump(); 
+				}
+				else break;
+			}
+		}
+		
+		Wl(ans);
 	}
 
 	static void Main()
@@ -51,10 +67,10 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"4
 ";
 		public static string _str2 =
-	$@"
+	$@"254
 ";
 		public static string _str3 =
 	$@"

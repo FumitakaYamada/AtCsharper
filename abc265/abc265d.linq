@@ -13,18 +13,52 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var n = inp[0];
+		var p = inp[1];
+		var q = inp[2];
+		var r = inp[3];
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
 
-		Wl();
+		var dp = new long[n+1];
+		
+		foreach (var i in Ie(1, n))
+		{
+			dp[i] = dp[i-1] + a[i-1];
+		}
+		
+		bool Contains(long num)
+		{
+			var ac = 0L;
+			var wc = n+1;
+			while (ac + 1 < wc)
+			{
+				var wj = (ac + wc) / 2;
+				if (dp[wj] <= num)
+					ac = wj;
+				else
+					wc = wj;
+			}
+			
+			return num == dp[ac];
+		}
+		
+		foreach (var i in Ie(n + 1))
+		{
+			if (Contains(dp[i] + p) &&
+				Contains(dp[i] + p + q) &&
+				Contains(dp[i] + p + q + r))
+			{
+				Wl("Yes");
+				return;
+			}
+		}
+
+		Wl("No");
 	}
 
 	static void Main()
@@ -51,13 +85,17 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"10 5 7 5
+1 3 2 2 2 3 1 4 3 2
+
 ";
 		public static string _str2 =
-	$@"
+	$@"9 100 101 100
+31 41 59 26 53 58 97 93 23
 ";
 		public static string _str3 =
-	$@"
+	$@"7 1 1 1
+1 1 1 1 1 1 1
 ";
 		public static string _str4 =
 	$@"

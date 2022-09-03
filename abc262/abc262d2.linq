@@ -13,18 +13,33 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
 		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var a = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		var ans = 0L;
 
-		Wl();
+		foreach (var i in Ie(1, n))
+		{
+			var dp = new long[n + 1, n + 1, n + 1];
+
+			dp[0, 0, 0] = 1;
+
+			foreach (var j in Ie(n))
+				foreach (var k in Ie(n))
+					foreach (var l in Ie(n))
+					{
+						dp[j + 1, k, l] += dp[j, k, l] % 998244353;
+						if (i != k) dp[j + 1, k + 1, (l + a[j]) % i] += dp[j, k, l] % 998244353;
+
+					}
+			ans += dp[n,i,0] % 998244353;
+		}
+
+		Wl(ans % 998244353);
 	}
 
 	static void Main()
@@ -51,10 +66,12 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"3
+2 6 2
 ";
 		public static string _str2 =
-	$@"
+	$@"5
+5 5 5 5 5
 ";
 		public static string _str3 =
 	$@"

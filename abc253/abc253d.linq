@@ -13,18 +13,25 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var n = inp[0];
+		var a = inp[1];
+		var b = inp[2];
+		
+		var na = n / a;
+		var asum = na * (na + 1) / 2 * a;
+		var nb = n / b;
+		var bsum = nb * (nb + 1) / 2 * b;
+		
+		var ab = GetLcm(a, b);
+		var nab = n / ab;
+		var absum = nab * (nab + 1) / 2 * ab;
 
-		Wl();
+		Wl(n * (n + 1) / 2 - asum - bsum + absum);
 	}
 
 	static void Main()
@@ -51,13 +58,13 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"10 3 5
 ";
 		public static string _str2 =
-	$@"
+	$@"1000000000 314 159
 ";
 		public static string _str3 =
-	$@"
+	$@"1000000000 1000000000 1000000000
 ";
 		public static string _str4 =
 	$@"
