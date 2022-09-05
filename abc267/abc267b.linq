@@ -14,18 +14,50 @@ using System.Text.RegularExpressions;
 static class Program
 {
 	const int M = 1000000007;
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
 		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		
+		var ca = s.ToCharArray().Select(x => x.Equals('1')).ToArray();
+		
+		if (ca[0])
+		{
+			Wl("No");
+			return;
+		}
+		
+		var line = new bool[]
+		{
+			ca[6],
+			ca[3],
+			ca[1] || ca[7],
+			ca[0] || ca[4],
+			ca[2] || ca[8],
+			ca[5],
+			ca[9],
+		};
+		
+		var phase = 0;
+		
+		foreach (var l in line)
+		{
+			if (l && phase == 0)
+			{
+				phase = 1;
+			}
+			else if (!l && phase == 1)
+			{
+				phase = 2;
+			}
+			if (l && phase == 2)
+			{
+				phase = 3;
+			}
+		}
 
-		Wl();
+		Wl(phase == 3 ? "Yes" : "No");
 	}
 
 	static void Main()
@@ -45,16 +77,16 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"0101110101
 ";
 		public static string _str2 =
-	$@"
+	$@"0100101001
 ";
 		public static string _str3 =
-	$@"
+	$@"0000100110
 ";
 		public static string _str4 =
-	$@"
+	$@"1101110101
 ";
 		public static string _str5 =
 	$@"

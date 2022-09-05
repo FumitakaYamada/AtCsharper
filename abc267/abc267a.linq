@@ -14,18 +14,37 @@ using System.Text.RegularExpressions;
 static class Program
 {
 	const int M = 1000000007;
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
 		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		
+		if (s.Equals("Monday"))
+		{
+			Wl(5);
+		}
 
-		Wl();
+		if (s.Equals("Tuesday"))
+		{
+			Wl(4);
+		}
+
+		if (s.Equals("Wednesday"))
+		{
+			Wl(3);
+		}
+
+		if (s.Equals("Thursday"))
+		{
+
+			Wl(2);
+		}
+
+		if (s.Equals("Friday"))
+		{
+			Wl(1);
+		}
 	}
 
 	static void Main()
@@ -45,10 +64,10 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"Wednesday
 ";
 		public static string _str2 =
-	$@"
+	$@"Monday
 ";
 		public static string _str3 =
 	$@"

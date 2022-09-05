@@ -14,18 +14,33 @@ using System.Text.RegularExpressions;
 static class Program
 {
 	const int M = 1000000007;
-	static int debug = 1;
-	
+	static int debug = 2;
+
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var n = inp[0];
+		var m = inp[1];
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
 
-		Wl();
+		var dp = new long[n + 1, n + 1];
+
+		foreach (var i in Ie(1, n))
+		{
+			dp[0, i] = long.MinValue / 2;
+		}
+		
+		foreach (var i in Ie(1,n))
+		{
+			foreach (var j in Ie(1,m))
+			{
+				dp[i,j] = Max(dp[i-1,j-1] + (j * a[i-1]), dp[i-1,j]);
+			}
+		}
+		
+		//dp.Dump();
+		
+		Wl(dp[n,m]);
 	}
 
 	static void Main()
@@ -45,16 +60,20 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"4 2
+5 4 -1 8
 ";
 		public static string _str2 =
-	$@"
+	$@"10 4
+-3 1 -4 1 -5 9 -2 6 -5 3
 ";
 		public static string _str3 =
-	$@"
+	$@"5 3
+100 100 -100 100000 1000
 ";
 		public static string _str4 =
-	$@"
+	$@"5 4
+-100 -100 -100000 1000000 3
 ";
 		public static string _str5 =
 	$@"

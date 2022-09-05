@@ -14,18 +14,38 @@ using System.Text.RegularExpressions;
 static class Program
 {
 	const int M = 1000000007;
-	static int debug = 1;
-	
+	static int debug = 2;
+
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
-		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var n = inp[0];
+		var m = inp[1];
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
+		
+		//a = Ie(n).ToArray();
+		
+		var bb = new long[n+1];
+		
+		foreach (var i in Ie(1, n))
+		{
+			bb[i] = bb[i-1] + a[i-1];
+		}
 
-		Wl();
+		var dp = new long[n - m + 1];
+
+		//dp[0] = Ie(m).Select(x => (long)a[x] * (long)(x + 1)).Sum();
+		dp[0] = Ie(m).Select(x => (long)a[x] * (long)(x + 1)).Sum();
+
+		foreach (var i in Ie(1, n - m))
+		{
+			//(m-i+1).Dump();
+			dp[i] = dp[i-1] - bb[m+i-1] + bb[i - 1] + m * a[i-1+m];
+		}
+		
+		//dp.Dump();
+		
+		Wl(dp.Max());
 	}
 
 	static void Main()
@@ -45,19 +65,24 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"4 2
+5 4 -1 8
 ";
 		public static string _str2 =
-	$@"
+	$@"10 4
+-3 1 -4 1 -5 9 -2 6 -5 3
 ";
 		public static string _str3 =
-	$@"
+	$@"5 5
+5 5 5 5 5
 ";
 		public static string _str4 =
-	$@"
+	$@"3 1
+1 2 3
 ";
 		public static string _str5 =
-	$@"
+	$@"5 2
+1 7 3 4 5
 ";
 
 		public static int GetCount()

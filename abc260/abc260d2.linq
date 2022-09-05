@@ -13,31 +13,112 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	const int M = 1000000007;
 	static int debug = 1;
 	
 	static void Function(Inputter inputter)
 	{
-		var s = inputter.GetNext();
-		var n = inputter.GetNext().ToInt();
 		var inp = inputter.GetNext().Split().Select(ToInt).ToArray();
-		var a = inp[0];
-		var b = inp[1];
-		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToInt).ToArray()).ToArray();
+		var n = inp[0];
+		var k = inp[1];
+		var p = inputter.GetNext().Split().Select(ToInt).ToArray();
+		
+		var ans = Ie(n).Select(x => -1).ToArray();
 
-		Wl();
+		var stack = new SortedDictionary<int, int[]>();
+
+		//stack.Add(-100, new int[] { });
+		//stack.Add(-101, new int[] { });
+		//stack.Add(-102, new int[] { });
+		//
+		//stack.Add(100, new int[] { });
+		//stack.Add(101, new int[] { });
+		//stack.Add(102, new int[] { });
+
+		void Put(int num, int turn)
+		{
+			var ac = -1;
+			var wc = stack.Count();
+			
+			var keys = stack.Keys.ToArray();
+			
+			while (ac + 1 < wc)
+			{
+				var wj = (ac + wc) / 2;
+
+				if (keys[wj] < num)
+				{
+					ac = wj;
+				}
+				else
+				{
+					wc = wj;
+				}
+			}
+
+			if (ac + 1 == stack.Count() && keys.Any() && keys.Last() < num)
+			{
+				ac = -2;
+			}
+			ac++;
+			
+			$"ac:{ac}".Dump();
+
+			if (ac != -1 && keys.Any())
+			{
+				var idx = keys[ac];
+				
+				if (stack[idx].Count() + 1 == k)
+				{
+					foreach (var i in stack[idx])
+					{
+						ans[i - 1] = turn;
+					}
+					ans[num - 1] = turn;
+					
+					stack.Remove(idx);
+				}
+				else
+				{
+					var nums = stack[idx].ToList();
+					stack.Remove(idx);
+					nums.Add(num);
+					stack.Add(idx, nums.ToArray());
+				}
+			}
+			else
+			{
+				stack.Add(num, new int[] {num});
+			}
+		}
+		
+		foreach (var i in Ie(n))
+		{
+			Put(p[i], i+1);
+		}
+		
+		foreach (var i in Ie(n))
+		{
+			Wl(ans[i]);
+		}
 	}
 
 	static void Main()
 	{
 		if (debug == 1)
+		{
 			foreach (var i in Ie(1, Inputter.GetCount()))
 			{
-				var inputter = new Inputter(){ Num = i };
+				var inputter = new Inputter()
+				{
+					Num = i,
+				};
 				Function(inputter);
 			}
+		}
 		else
+		{
 			Function(new Inputter());
+		}
 	}
 
 	public class Inputter
@@ -45,13 +126,16 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"5 2
+3 5 2 1 4
 ";
 		public static string _str2 =
-	$@"
+	$@"5 1
+1 2 3 4 5
 ";
 		public static string _str3 =
-	$@"
+	$@"15 3
+3 14 15 9 2 6 5 13 1 7 10 11 8 12 4
 ";
 		public static string _str4 =
 	$@"
@@ -67,23 +151,41 @@ static class Program
 				debug = 0;
 				return 1;
 			}
-			if (_str2.Length <= 2) return 1;
-			if (_str3.Length <= 2) return 2;
-			if (_str4.Length <= 2) return 3;
-			if (_str5.Length <= 2) return 4;
+			if (_str2.Length <= 2)
+			{
+				return 1;
+			}
+			if (_str3.Length <= 2)
+			{
+				return 2;
+			}
+			if (_str4.Length <= 2)
+			{
+				return 3;
+			}
+			if (_str5.Length <= 2)
+			{
+				return 4;
+			}
 			return 5;
 		}
+
 		private int _index = 0;
 		private string[] lines = null;
+
 		private string[] GetLines()
 		{
 			var strs = new [] { _str1, _str2, _str3, _str4, _str5 };
+			
 			if (lines == null)
+			{
 				lines = strs[Num - 1].Split("\n")
 					.Select(x => x.Replace("\n", "").Replace("\r", ""))
 					.ToArray();
+			}
 			return lines;
 		}
+
 		public string GetNext()
 		{
 			if (debug == 1)
@@ -92,35 +194,15 @@ static class Program
 				_index++;
 				return str;
 			}
-			return Console.ReadLine();
+			else
+			{
+				return Console.ReadLine();
+			}
 		}
 	}
 
-	// 順列
-	static long nPk(long n, long k)
-	{
-		if (n < k) return 0;
-		if (n == k) return 1;
-		long x = 1;
-		for (long i = 0; i < k; i++)
-		{
-			x = x * (n - i);
-		}
-		return x;
-	}
+	const int M = 1000000007;
 
-	// 組合せ
-	static long nCk(long n, long k)
-	{
-		if (n < k) return 0;
-		if (n == k) return 1;
-		long x = 1;
-		for (long i = 0; i < k; i++)
-		{
-			x = x * (n - i) / (i + 1);
-		}
-		return x;
-	}
 	public static int LowerBound<T>(T[] a, T v) => LowerBound(a, v, Comparer<T>.Default);
 	public static int LowerBound<T>(T[] a, T v, Comparer<T> cmp)
 	{
@@ -149,16 +231,40 @@ static class Program
 		}
 		return ac;
 	}
+	
+	// 順列
+	static long nPk(long n, long k)
+	{
+		if (n < k) return 0;
+		if (n == k) return 1;
+
+		long x = 1;
+		for (long i = 0; i < k; i++)
+		{
+			x = x * (n - i);
+		}
+		return x;
+	}
+
+	// 組合せ
+	static long nCk(long n, long k)
+	{
+		if (n < k) return 0;
+		if (n == k) return 1;
+
+		long x = 1;
+		for (long i = 0; i < k; i++)
+		{
+			x = x * (n - i) / (i + 1);
+		}
+		return x;
+	}
+	
 	public static Random rand = new Random();
+
 	public static char GetRandomAlphabetChar() => ("abcdefghijklmnopqrstuvwxyz".ToCharArray()[rand.Next() % 26]);
 	public static string ToSpaceString<T>(this IEnumerable<T> ie) => String.Join(' ', ie.ToArray());
 	public static IEnumerable<long> ToLong(this IEnumerable<int> ie) => ie.Select(x => (long)x);
-	public static int Max(int a, int b) => Math.Max(a, b);
-	public static int Min(int a, int b) => Math.Min(a, b);
-	public static long Max(long a, long b) => Math.Max(a, b);
-	public static long Min(long a, long b) => Math.Min(a, b);
-	public static double Max(double a, double b) => Math.Max(a, b);
-	public static double Min(double a, double b) => Math.Min(a, b);
 	public static long LongSum(this IEnumerable<int> ie) => ie.ToLong().Sum();
 	public static void Wl(object obj = null) => Console.WriteLine(obj);
 	public static long ToLong(this string str) => long.Parse(str);
