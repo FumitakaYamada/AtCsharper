@@ -18,67 +18,37 @@ static class Program
 	
 	static void Function(Inputter inputter)
 	{
-		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var l = Ie(m).Select(x => inputter.GetNext().Split().Select(ToLong).Select(x => x-1).ToArray()).ToList();
-		l.AddRange(l.Select(x => new[] { x[1], x[0] }).ToArray());
-
-		var costsMaster = Ie(n).Select(x => l.Where(y => y[0] == x).Sum(y => a[y[1]])).ToArray();
-
-		var ac = 0L;
-		var wc = costsMaster.Max();
-		while (ac + 1 < wc)
+		var n = inputter.GetNext().ToLong();
+		
+		var primes = Enumerable.Range(1, 1000000).Select(x => (long)x).Where(IsPrime).ToArray();
+		var sum = 0L;
+		
+		foreach (var i in primes)
 		{
-			var wj = (ac + wc) / 2;
-			
-			var deletable = Ie(n).Where(x => costsMaster[x] <= wj).ToList();
-			var deleted = new bool[n];
-			var costs = costsMaster.ToArray();
-			var ll = l.ToList();
-			
-			var success = true;
-			
-			foreach (var i in Ie(n))
-			{
-				if (!deletable.Any())
-				{
-					success = false;
-					break;
-				}
-				
-				var del = deletable.First();
-				deletable.Remove(del);
-				deleted[del] = true;
-				
-				foreach (var jj in ll.Where(x => x[0] == del).ToArray())
-				{
-					var j = jj[1];
-					
-					ll.Remove(jj);
-					
-					costs[j] -= a[del];
-					if (costs[j] <= wj && !deleted[j])
-					{
-						deletable.Add(j);
-					}
-				}
-			}
+			var a = n/i/i/i;
 
-			if (success)
-				wc = wj;
-			else
-				ac = wj;
+			var ac = 0;
+			var wc = primes.Count() - 1;
+			
+			while (ac <= wc)
+			{
+				var wj = ac + (wc - ac) / 2;
+				if (primes[wj] <= a && primes[wj] < i) ac = wj + 1;
+				else wc = wj - 1;
+			}
+			
+			sum += ac;
+
+			//$"a:{a},i:{i},ac:{ac}".Dump();
 		}
 
-		Wl(ac + 1);
+		Wl(sum);
 	}
 
 	static void Main()
 	{
 		if (debug == 1)
-			foreach (int i in Ie(1, Inputter.GetCount()))
+			foreach (var i in Ie(1, Inputter.GetCount()))
 			{
 				var inputter = new Inputter(){ Num = i };
 				Function(inputter);
@@ -92,33 +62,15 @@ static class Program
 		public int Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"4 3
-3 1 4 2
-1 2
-1 3
-4 1
-
+	$@"250
 ";
 		public static string _str2 =
-	$@"7 13
-464 661 847 514 74 200 188
-5 1
-7 1
-5 7
-4 1
-4 5
-2 4
-5 2
-1 3
-1 6
-3 5
-1 2
-4 6
-2 7
+	$@"1
 
 ";
 		public static string _str3 =
-	$@"
+	$@"123456789012345
+
 ";
 		public static string _str4 =
 	$@"
@@ -197,7 +149,7 @@ static class Program
 		{
 			var wj = ac + (wc - ac) / 2;
 			var res = cmp.Compare(a[wj], v);
-			if (res == -1) ac = wj + 1;
+			if (res <= 0) ac = wj + 1;
 			else wc = wj - 1;
 		}
 		return ac;
@@ -234,8 +186,8 @@ static class Program
 	public static int ToInt(this char ch) => int.Parse(ch.ToString());
 	public static double ToDouble(this string str) => double.Parse(str);
 	public static long GetDigit(this long num) => (num == 0) ? 1 : ((long)Math.Log10(num) + 1);
-	public static IEnumerable<long> Ie(long start, long count) => Enumerable.Range((int)start, (int)count).Select(x => (long)x).ToArray();
-	public static IEnumerable<long> Ie(long count) => Ie(0, count);
+	public static IEnumerable<int> Ie(long start, long count) => Enumerable.Range((int)start, (int)count);
+	public static IEnumerable<int> Ie(long count) => Ie(0, count);
 	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
 	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
 	public static string ToCString(this char[] ca) => new String(ca);
@@ -316,6 +268,14 @@ static class Program
 		var c = a;
 		a = b;
 		b = c;
+	}
+	
+	public static bool IsPrime(long n)
+	{
+		if (n < 2) return false;
+		for (var i = 2; i * i <= n; i++)
+			if (n % i == 0) return false;
+		return true;
 	}
 
 	public static string ToBitString(this int num)

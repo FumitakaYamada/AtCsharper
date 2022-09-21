@@ -24,55 +24,25 @@ static class Program
 		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
 		var l = Ie(m).Select(x => inputter.GetNext().Split().Select(ToLong).Select(x => x-1).ToArray()).ToList();
 		l.AddRange(l.Select(x => new[] { x[1], x[0] }).ToArray());
-
-		var costsMaster = Ie(n).Select(x => l.Where(y => y[0] == x).Sum(y => a[y[1]])).ToArray();
-
-		var ac = 0L;
-		var wc = costsMaster.Max();
-		while (ac + 1 < wc)
+		var dic = l.GroupBy(x => x[0]).ToDictionary(x => x.Key, x => x.Select(x => x[1]).ToArray());
+		var c = Ie(n).Select(x => l.Where(y => y[0] == x).Sum(y => a[y[1]])).ToArray();
+		var pq = new Extension.PriorityQueue<long, long[]>(x => x[1], false);
+		foreach (var i in Ie(n)) pq.Enqueue(new long[] { i, c[i] });
+		var dd = new bool[n];
+		var cost = 0L;
+		while (pq.Count > 0)
 		{
-			var wj = (ac + wc) / 2;
-			
-			var deletable = Ie(n).Where(x => costsMaster[x] <= wj).ToList();
-			var deleted = new bool[n];
-			var costs = costsMaster.ToArray();
-			var ll = l.ToList();
-			
-			var success = true;
-			
-			foreach (var i in Ie(n))
+			var d = pq.Dequeue()[0];
+			cost = Max(cost, c[d]);
+			dd[d] = true;
+			if (dic.ContainsKey(d)) foreach (var i in dic[d]) if (!dd[i])
 			{
-				if (!deletable.Any())
-				{
-					success = false;
-					break;
-				}
-				
-				var del = deletable.First();
-				deletable.Remove(del);
-				deleted[del] = true;
-				
-				foreach (var jj in ll.Where(x => x[0] == del).ToArray())
-				{
-					var j = jj[1];
-					
-					ll.Remove(jj);
-					
-					costs[j] -= a[del];
-					if (costs[j] <= wj && !deleted[j])
-					{
-						deletable.Add(j);
-					}
-				}
+				c[i] -= a[d];
+				pq.Enqueue(new long[] { i, c[i] });
 			}
-
-			if (success)
-				wc = wj;
-			else
-				ac = wj;
 		}
 
-		Wl(ac + 1);
+		Wl(cost);
 	}
 
 	static void Main()
@@ -525,184 +495,87 @@ public static class Extension
 		}
 		return list;
 	}
-	
-	public static PriorityQueue<T> ToPriorityQueue<T>(this IEnumerable<T> source, bool isDescending = true)
+
+	public class PriorityQueue<TKey, TValue> : IEnumerable<TValue>
 	{
-		var queue = new PriorityQueue<T>(isDescending);
-		foreach (var item in source)
+		private readonly List<KeyValuePair<TKey, TValue>> _data = new List<KeyValuePair<TKey, TValue>>();
+		private readonly bool _isDescending;
+		private readonly Func<TValue, TKey> _keySelector;
+		private readonly IComparer<TKey> _keyComparer;
+
+		public PriorityQueue(Func<TValue, TKey> keySelector, bool isDescending = true)
+			: this(keySelector, Comparer<TKey>.Default, isDescending)
 		{
-			queue.Enqueue(item);
 		}
 
-		return queue;
-	}
-}
-
-public class PriorityQueue<T> : IEnumerable<T>
-{
-	private readonly List<T> _data = new List<T>();
-	private readonly IComparer<T> _comparer;
-	private readonly bool _isDescending;
-
-	public PriorityQueue(IComparer<T> comparer, bool isDescending = true)
-	{
-		_comparer = comparer;
-		_isDescending = isDescending;
-	}
-
-	public PriorityQueue(Comparison<T> comparison, bool isDescending = true)
-		: this(Comparer<T>.Create(comparison), isDescending)
-	{
-	}
-
-	public PriorityQueue(bool isDescending = true)
-		: this(Comparer<T>.Default, isDescending)
-	{
-	}
-
-	public void Enqueue(T item)
-	{
-		_data.Add(item);
-		var childIndex = _data.Count - 1;
-		while (childIndex > 0)
+		public PriorityQueue(Func<TValue, TKey> keySelector, IComparer<TKey> keyComparer, bool isDescending = true)
 		{
-			var parentIndex = (childIndex - 1) / 2;
-			if (Compare(_data[childIndex], _data[parentIndex]) >= 0)
-				break;
-			Swap(childIndex, parentIndex);
-			childIndex = parentIndex;
+			_keySelector = keySelector;
+			_keyComparer = keyComparer;
+			_isDescending = isDescending;
 		}
-	}
 
-	public T Dequeue()
-	{
-		var lastIndex = _data.Count - 1;
-		var firstItem = _data[0];
-		_data[0] = _data[lastIndex];
-		_data.RemoveAt(lastIndex--);
-		var parentIndex = 0;
-		while (true)
+		public void Enqueue(TValue item)
 		{
-			var childIndex = parentIndex * 2 + 1;
-			if (childIndex > lastIndex)
-				break;
-			var rightChild = childIndex + 1;
-			if (rightChild <= lastIndex && Compare(_data[rightChild], _data[childIndex]) < 0)
-				childIndex = rightChild;
-			if (Compare(_data[parentIndex], _data[childIndex]) <= 0)
-				break;
-			Swap(parentIndex, childIndex);
-			parentIndex = childIndex;
+			_data.Add(new KeyValuePair<TKey, TValue>(_keySelector(item), item));
+			var childIndex = _data.Count - 1;
+			while (childIndex > 0)
+			{
+				var parentIndex = (childIndex - 1) / 2;
+				if (Compare(_data[childIndex].Key, _data[parentIndex].Key) >= 0)
+					break;
+				Swap(childIndex, parentIndex);
+				childIndex = parentIndex;
+			}
 		}
-		return firstItem;
-	}
 
-	public T Peek()
-	{
-		return _data[0];
-	}
-
-	private void Swap(int a, int b)
-	{
-		var tmp = _data[a];
-		_data[a] = _data[b];
-		_data[b] = tmp;
-	}
-
-	private int Compare(T a, T b)
-	{
-		return _isDescending ? _comparer.Compare(b, a) : _comparer.Compare(a, b);
-	}
-
-	public int Count => _data.Count;
-
-	public IEnumerator<T> GetEnumerator()
-	{
-		return _data.GetEnumerator();
-	}
-
-	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-}
-
-public class PriorityQueue<TKey, TValue> : IEnumerable<TValue>
-{
-	private readonly List<KeyValuePair<TKey, TValue>> _data = new List<KeyValuePair<TKey, TValue>>();
-	private readonly bool _isDescending;
-	private readonly Func<TValue, TKey> _keySelector;
-	private readonly IComparer<TKey> _keyComparer;
-
-	public PriorityQueue(Func<TValue, TKey> keySelector, bool isDescending = true)
-		: this(keySelector, Comparer<TKey>.Default, isDescending)
-	{
-	}
-
-	public PriorityQueue(Func<TValue, TKey> keySelector, IComparer<TKey> keyComparer, bool isDescending = true)
-	{
-		_keySelector = keySelector;
-		_keyComparer = keyComparer;
-		_isDescending = isDescending;
-	}
-
-	public void Enqueue(TValue item)
-	{
-		_data.Add(new KeyValuePair<TKey, TValue>(_keySelector(item), item));
-		var childIndex = _data.Count - 1;
-		while (childIndex > 0)
+		public TValue Dequeue()
 		{
-			var parentIndex = (childIndex - 1) / 2;
-			if (Compare(_data[childIndex].Key, _data[parentIndex].Key) >= 0)
-				break;
-			Swap(childIndex, parentIndex);
-			childIndex = parentIndex;
+			var lastIndex = _data.Count - 1;
+			var firstItem = _data[0];
+			_data[0] = _data[lastIndex];
+			_data.RemoveAt(lastIndex--);
+			var parentIndex = 0;
+			while (true)
+			{
+				var childIndex = parentIndex * 2 + 1;
+				if (childIndex > lastIndex)
+					break;
+				var rightChild = childIndex + 1;
+				if (rightChild <= lastIndex && Compare(_data[rightChild].Key, _data[childIndex].Key) < 0)
+					childIndex = rightChild;
+				if (Compare(_data[parentIndex].Key, _data[childIndex].Key) <= 0)
+					break;
+				Swap(parentIndex, childIndex);
+				parentIndex = childIndex;
+			}
+			return firstItem.Value;
 		}
-	}
 
-	public TValue Dequeue()
-	{
-		var lastIndex = _data.Count - 1;
-		var firstItem = _data[0];
-		_data[0] = _data[lastIndex];
-		_data.RemoveAt(lastIndex--);
-		var parentIndex = 0;
-		while (true)
+		public TValue Peek()
 		{
-			var childIndex = parentIndex * 2 + 1;
-			if (childIndex > lastIndex)
-				break;
-			var rightChild = childIndex + 1;
-			if (rightChild <= lastIndex && Compare(_data[rightChild].Key, _data[childIndex].Key) < 0)
-				childIndex = rightChild;
-			if (Compare(_data[parentIndex].Key, _data[childIndex].Key) <= 0)
-				break;
-			Swap(parentIndex, childIndex);
-			parentIndex = childIndex;
+			return _data[0].Value;
 		}
-		return firstItem.Value;
+
+		private void Swap(int a, int b)
+		{
+			var tmp = _data[a];
+			_data[a] = _data[b];
+			_data[b] = tmp;
+		}
+
+		private int Compare(TKey a, TKey b)
+		{
+			return _isDescending ? _keyComparer.Compare(b, a) : _keyComparer.Compare(a, b);
+		}
+
+		public int Count => _data.Count;
+
+		public IEnumerator<TValue> GetEnumerator()
+		{
+			return _data.Select(r => r.Value).GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
-
-	public TValue Peek()
-	{
-		return _data[0].Value;
-	}
-
-	private void Swap(int a, int b)
-	{
-		var tmp = _data[a];
-		_data[a] = _data[b];
-		_data[b] = tmp;
-	}
-
-	private int Compare(TKey a, TKey b)
-	{
-		return _isDescending ? _keyComparer.Compare(b, a) : _keyComparer.Compare(a, b);
-	}
-
-	public int Count => _data.Count;
-
-	public IEnumerator<TValue> GetEnumerator()
-	{
-		return _data.Select(r => r.Value).GetEnumerator();
-	}
-
-	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

@@ -18,67 +18,42 @@ static class Program
 	
 	static void Function(Inputter inputter)
 	{
-		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var l = Ie(m).Select(x => inputter.GetNext().Split().Select(ToLong).Select(x => x-1).ToArray()).ToList();
-		l.AddRange(l.Select(x => new[] { x[1], x[0] }).ToArray());
-
-		var costsMaster = Ie(n).Select(x => l.Where(y => y[0] == x).Sum(y => a[y[1]])).ToArray();
-
-		var ac = 0L;
-		var wc = costsMaster.Max();
-		while (ac + 1 < wc)
+		var n = 10L;
+		var s = Ie(n).Select(x => inputter.GetNext()).ToArray();
+		
+		var first = new long[2];
+		var last = new long[2];
+		
+		var isF = true;
+		
+		foreach (var i in Ie(10))
 		{
-			var wj = (ac + wc) / 2;
-			
-			var deletable = Ie(n).Where(x => costsMaster[x] <= wj).ToList();
-			var deleted = new bool[n];
-			var costs = costsMaster.ToArray();
-			var ll = l.ToList();
-			
-			var success = true;
-			
-			foreach (var i in Ie(n))
+			foreach (var j in Ie(10))
 			{
-				if (!deletable.Any())
+				if (s[i].ToCharArray()[j].Equals('#'))
 				{
-					success = false;
-					break;
-				}
-				
-				var del = deletable.First();
-				deletable.Remove(del);
-				deleted[del] = true;
-				
-				foreach (var jj in ll.Where(x => x[0] == del).ToArray())
-				{
-					var j = jj[1];
-					
-					ll.Remove(jj);
-					
-					costs[j] -= a[del];
-					if (costs[j] <= wj && !deleted[j])
+					if (isF)
 					{
-						deletable.Add(j);
+						first[0] = i+1;
+						last[0] = j+1;
+						isF = false;
 					}
+					first[1] = i+1;
+					last[1] = j+1;
 				}
 			}
-
-			if (success)
-				wc = wj;
-			else
-				ac = wj;
 		}
 
-		Wl(ac + 1);
+
+
+		Wl($"{first[0]} {first[1]}");
+		Wl($"{last[0]} {last[1]}");
 	}
 
 	static void Main()
 	{
 		if (debug == 1)
-			foreach (int i in Ie(1, Inputter.GetCount()))
+			foreach (var i in Ie(1, Inputter.GetCount()))
 			{
 				var inputter = new Inputter(){ Num = i };
 				Function(inputter);
@@ -89,39 +64,57 @@ static class Program
 
 	public class Inputter
 	{
-		public int Num { get; set; } = 1;
+		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"4 3
-3 1 4 2
-1 2
-1 3
-4 1
-
+	$@"..........
+..........
+..........
+..........
+...######.
+...######.
+...######.
+...######.
+..........
+..........
 ";
 		public static string _str2 =
-	$@"7 13
-464 661 847 514 74 200 188
-5 1
-7 1
-5 7
-4 1
-4 5
-2 4
-5 2
-1 3
-1 6
-3 5
-1 2
-4 6
-2 7
+	$@"..........
+..#.......
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
 
 ";
 		public static string _str3 =
-	$@"
+	$@"##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+
 ";
 		public static string _str4 =
-	$@"
+	$@"..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
 ";
 		public static string _str5 =
 	$@"
@@ -188,8 +181,8 @@ static class Program
 		}
 		return x;
 	}
-	public static int LowerBound<T>(T[] a, T v) => LowerBound(a, v, Comparer<T>.Default);
-	public static int LowerBound<T>(T[] a, T v, Comparer<T> cmp)
+	public static long LowerBound<T>(T[] a, T v) => LowerBound(a, v, Comparer<T>.Default);
+	public static long LowerBound<T>(T[] a, T v, Comparer<T> cmp)
 	{
 		var ac = 0;
 		var wc = a.Length - 1;
@@ -202,8 +195,8 @@ static class Program
 		}
 		return ac;
 	}
-	public static int UpperBound<T>(T[] a, T v) => UpperBound(a, v, Comparer<T>.Default);
-	public static int UpperBound<T>(T[] a, T v, Comparer<T> cmp)
+	public static long UpperBound<T>(T[] a, T v) => UpperBound(a, v, Comparer<T>.Default);
+	public static long UpperBound<T>(T[] a, T v, Comparer<T> cmp)
 	{
 		var ac = 0;
 		var wc = a.Length - 1;
@@ -220,24 +213,17 @@ static class Program
 	public static char GetRandomAlphabetChar() => ("abcdefghijklmnopqrstuvwxyz".ToCharArray()[rand.Next() % 26]);
 	public static string ToSpaceString<T>(this IEnumerable<T> ie) => String.Join(' ', ie.ToArray());
 	public static IEnumerable<long> ToLong(this IEnumerable<int> ie) => ie.Select(x => (long)x);
-	public static int Max(int a, int b) => Math.Max(a, b);
-	public static int Min(int a, int b) => Math.Min(a, b);
 	public static long Max(long a, long b) => Math.Max(a, b);
 	public static long Min(long a, long b) => Math.Min(a, b);
 	public static double Max(double a, double b) => Math.Max(a, b);
 	public static double Min(double a, double b) => Math.Min(a, b);
-	public static long LongSum(this IEnumerable<int> ie) => ie.ToLong().Sum();
 	public static void Wl(object obj = null) => Console.WriteLine(obj);
 	public static long ToLong(this string str) => long.Parse(str);
-	public static int ToInt(this string str) => int.Parse(str);
 	public static long ToLong(this char ch) => long.Parse(ch.ToString());
-	public static int ToInt(this char ch) => int.Parse(ch.ToString());
 	public static double ToDouble(this string str) => double.Parse(str);
 	public static long GetDigit(this long num) => (num == 0) ? 1 : ((long)Math.Log10(num) + 1);
-	public static IEnumerable<long> Ie(long start, long count) => Enumerable.Range((int)start, (int)count).Select(x => (long)x).ToArray();
+	public static IEnumerable<long> Ie(long start, long count) => Enumerable.Range((int)start, (int)count).ToLong();
 	public static IEnumerable<long> Ie(long count) => Ie(0, count);
-	public static T[][] Aa<T>(int first, int second) => Ie(first).Select(x => new T[second]).ToArray();
-	public static T[][] Aa<T>(int first, int second, T init) => Ie(first).Select(x => Ie(second).Select(x => init).ToArray()).ToArray();
 	public static string ToCString(this char[] ca) => new String(ca);
 	public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue def = default(TValue)) { TValue val; return dic.TryGetValue(key, out val) ? val : def; }
 	public static void RemoveLast<T>(this List<T> list) => list.RemoveAt(list.Count() - 1);
@@ -318,6 +304,14 @@ static class Program
 		b = c;
 	}
 
+	public static bool IsPrime(long n)
+	{
+		if (n < 2) return false;
+		for (var i = 2; i * i <= n; i++)
+			if (n % i == 0) return false;
+		return true;
+	}
+
 	public static string ToBitString(this int num)
 	{
 		var ca = new List<char>();
@@ -347,7 +341,6 @@ static class Program
 		return result;
 	}
 
-	public static IEnumerable<long> GetDivisors(this int num) => GetDivisors((long)num);
 	public static IEnumerable<long> GetDivisors(this long num)
 	{
 		if (num < 1) yield break;
@@ -362,7 +355,6 @@ static class Program
 		}
 	}
 
-	public static IEnumerable<long> GetPrimeFactors(this int num) => GetPrimeFactors((long)num);
 	public static IEnumerable<long> GetPrimeFactors(this long n)
 	{
 		var i = 2L;

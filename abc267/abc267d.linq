@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 static class Program
 {
 	const int M = 1000000007;
-	static int debug = 2;
+	static int debug = 1;
 
 	static void Function(Inputter inputter)
 	{
@@ -38,7 +38,7 @@ static class Program
 			}
 		}
 		
-		//dp.Dump();
+		dp.Dump();
 		
 		Wl(dp[n,m]);
 	}
