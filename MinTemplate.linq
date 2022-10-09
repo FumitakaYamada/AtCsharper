@@ -95,17 +95,47 @@ static class Program
 			return Console.ReadLine();
 		}
 	}
+	
+	public class Dsu
+	{
+		public long N { get; }
+		public long[] ParentOrSize { get; }
+		
+		public Dsu(long n)
+		{
+			N = n;
+			ParentOrSize = Ie(n).Select(x => -1L).ToArray();
+		}
+		
+		public long Merge(long a, long b)
+		{
+			var x = Leader(a);
+			var y = Leader(b);
+			if (x == y) return x;
+			if (-ParentOrSize[x] < -ParentOrSize[y]) Swap(ref x, ref y);
+			ParentOrSize[x] += ParentOrSize[y];
+			ParentOrSize[y] = x;
+			return x;
+		}
+		
+		public bool Same(long a, long b) => Leader(a) == Leader(b);
+		
+		public long Leader(long a)
+		{
+			if (ParentOrSize[a] < 0) return a;
+			return ParentOrSize[a] = Leader(ParentOrSize[a]);
+		}
+		
+		public long Size(long a) => ParentOrSize[Leader(a)];
+		public long[][] Groups() => Ie(N).GroupBy(x => Leader(x)).Select(x => x.ToArray()).ToArray();
+	}
 
 	public class UnionFind
 	{
 		public long[] Parents { get; set; }
 		public UnionFind(long n)
 		{
-			this.Parents = new long[n];
-			for (int i = 0; i < n; i++)
-			{
-				this.Parents[i] = i;
-			}
+			Parents = Ie(n).Select(x => x).ToArray();
 		}
 		
 		public long Root(long x)
@@ -122,10 +152,7 @@ static class Program
 			Parents[rx] = ry;
 		}
 
-		public bool Same(long x, long y)
-		{
-			return Root(x) == Root(y);
-		}
+		public bool Same(long x, long y) => Root(x) == Root(y);
 	}
 
 	// 順列
@@ -153,25 +180,25 @@ static class Program
 		}
 		return x;
 	}
-	public static long LowerBound<T>(T[] a, T v) => LowerBound(a, v, Comparer<T>.Default);
-	public static long LowerBound<T>(T[] a, T v, Comparer<T> cmp)
+	public static long LowerBound<T>(IList<T> a, T v) => LowerBound(a, v, Comparer<T>.Default);
+	public static long LowerBound<T>(IList<T> a, T v, Comparer<T> cmp)
 	{
 		var ac = 0;
-		var wc = a.Length - 1;
+		var wc = a.Count - 1;
 		while (ac <= wc)
 		{
 			var wj = ac + (wc - ac) / 2;
 			var res = cmp.Compare(a[wj], v);
-			if (res == -1) ac = wj + 1;
+			if (res <= 0) ac = wj + 1;
 			else wc = wj - 1;
 		}
 		return ac;
 	}
-	public static long UpperBound<T>(T[] a, T v) => UpperBound(a, v, Comparer<T>.Default);
-	public static long UpperBound<T>(T[] a, T v, Comparer<T> cmp)
+	public static long UpperBound<T>(IList<T> a, T v) => UpperBound(a, v, Comparer<T>.Default);
+	public static long UpperBound<T>(IList<T> a, T v, Comparer<T> cmp)
 	{
 		var ac = 0;
-		var wc = a.Length - 1;
+		var wc = a.Count - 1;
 		while (ac <= wc)
 		{
 			var wj = ac + (wc - ac) / 2;

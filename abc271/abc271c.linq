@@ -14,55 +14,36 @@ using System.Text.RegularExpressions;
 static class Program
 {
 	const int M = 1000000007;
-	static int debug = 1;
-
+	static int debug = 2;
+	
 	static void Function(Inputter inputter)
 	{
-		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		var e = inp[2];
-		var l = Ie(e).Select(x => inputter.GetNext().Split().Select(y => y.ToLong() - 1L).ToArray()).ToArray();
-		var q = inputter.GetNext().ToLong();
-		var xx = Ie(q).Select(x => inputter.GetNext().ToLong() - 1L).Reverse().ToArray();
-
-		var def = new bool[e];
-		foreach (var i in xx) def[i] = true;
-
-		var d = new Dsu(n+m);
-		foreach (var i in Ie(e))
-		{
-			if (def[i]) continue;
-			d.Merge(l[i][0], l[i][1]);
-		}
+		var n = inputter.GetNext().ToLong();
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
 		
-		d.Groups().Dump();
-		d.ParentOrSize.Dump();
+		var ac = 0L;
+		var wc = (long)(Math.Pow(10, 9) + 30L);
 		
-		var dic = Ie(n + m).GroupBy(x => d.Leader(x)).ToDictionary(x => x.Key, x => x.Any(y => y >= n));
-		var results = new long[q];
-		results[0] = Ie(n).Count(x => dic[d.Leader(x)]);
-		//d.Merge(l[xx[0]][0], l[xx[0]][1]);
-		foreach (var i in Ie(1, q - 1))
+		while (ac + 1 < wc)
 		{
-			var diff = 0;
-			if (dic[d.Leader(l[xx[i - 1]][0])] != dic[d.Leader(l[xx[i - 1]][1])])
-			{
-				d.Merge(l[xx[i - 1]][0], l[xx[i - 1]][1]);
-				
-				diff = dic[d.Leader(l[xx[i-1]][0])] ? d.Groups().First(x => x.Contains(l[xx[i-1]][0])).Count(x => x < n) :
-					d.Groups().First(x => x.Contains(l[xx[i-1]][1])).Count(x => x < n);
-			}
-			results[i] = results[i-1] + diff;
+			var wj = (ac + wc) / 2;
+
+			var have = a.Distinct().Count(x => x <= wj);
 			
-			//d.Merge(l[xx[i]][0], l[xx[i]][1]);
+			//$"wj:{wj}".Dump();
+			//have.Dump();
+			
+			if (have + (a.Length - have) / 2 >= wj)
+			{
+				ac = wj;
+			}
+			else
+			{
+				wc = wj;
+			}
 		}
 
-		d.Groups().Dump();
-		d.ParentOrSize.Dump();
-		
-		foreach (var i in results.Reverse())
-			Wl(i);
+		Wl(ac);
 	}
 
 	static void Main()
@@ -70,7 +51,7 @@ static class Program
 		if (debug == 1)
 			foreach (var i in Ie(1, Inputter.GetCount()))
 			{
-				var inputter = new Inputter() { Num = i };
+				var inputter = new Inputter(){ Num = i };
 				Function(inputter);
 			}
 		else
@@ -82,31 +63,19 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"5 5 10
-2 3
-4 10
-5 10
-6 9
-2 9
-4 8
-1 7
-3 6
-8 10
-1 8
-6
-3
-5
-8
-10
-2
-7
+	$@"6
+1 2 4 6 7 271
 
 ";
 		public static string _str2 =
-	$@"
+	$@"10
+1 1 1 1 1 1 1 1 1 1
+
 ";
 		public static string _str3 =
-	$@"
+	$@"1
+5
+
 ";
 		public static string _str4 =
 	$@"
@@ -132,7 +101,7 @@ static class Program
 		private string[] lines = null;
 		private string[] GetLines()
 		{
-			var strs = new[] { _str1, _str2, _str3, _str4, _str5 };
+			var strs = new [] { _str1, _str2, _str3, _str4, _str5 };
 			if (lines == null)
 				lines = strs[Num - 1].Split("\n")
 					.Select(x => x.Replace("\n", "").Replace("\r", ""))
@@ -150,18 +119,18 @@ static class Program
 			return Console.ReadLine();
 		}
 	}
-
+	
 	public class Dsu
 	{
 		public long N { get; }
 		public long[] ParentOrSize { get; }
-
+		
 		public Dsu(long n)
 		{
 			N = n;
 			ParentOrSize = Ie(n).Select(x => -1L).ToArray();
 		}
-
+		
 		public long Merge(long a, long b)
 		{
 			var x = Leader(a);
@@ -172,29 +141,25 @@ static class Program
 			ParentOrSize[y] = x;
 			return x;
 		}
-
+		
 		public bool Same(long a, long b) => Leader(a) == Leader(b);
-
+		
 		public long Leader(long a)
 		{
 			if (ParentOrSize[a] < 0) return a;
 			return ParentOrSize[a] = Leader(ParentOrSize[a]);
 		}
-
+		
 		public long Size(long a) => ParentOrSize[Leader(a)];
 		public long[][] Groups() => Ie(N).GroupBy(x => Leader(x)).Select(x => x.ToArray()).ToArray();
 	}
-	
+
 	public class UnionFind
-		{
-			public long[] Parents { get; set; }
+	{
+		public long[] Parents { get; set; }
 		public UnionFind(long n)
 		{
-			this.Parents = new long[n];
-			for (int i = 0; i < n; i++)
-			{
-				this.Parents[i] = i;
-			}
+			Parents = Ie(n).Select(x => x).ToArray();
 		}
 		
 		public long Root(long x)
@@ -211,10 +176,7 @@ static class Program
 			Parents[rx] = ry;
 		}
 
-		public bool Same(long x, long y)
-		{
-			return Root(x) == Root(y);
-		}
+		public bool Same(long x, long y) => Root(x) == Root(y);
 	}
 
 	// 順列

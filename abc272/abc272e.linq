@@ -15,54 +15,85 @@ static class Program
 {
 	const int M = 1000000007;
 	static int debug = 1;
-
+	
 	static void Function(Inputter inputter)
 	{
 		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
 		var n = inp[0];
 		var m = inp[1];
-		var e = inp[2];
-		var l = Ie(e).Select(x => inputter.GetNext().Split().Select(y => y.ToLong() - 1L).ToArray()).ToArray();
-		var q = inputter.GetNext().ToLong();
-		var xx = Ie(q).Select(x => inputter.GetNext().ToLong() - 1L).Reverse().ToArray();
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
 
-		var def = new bool[e];
-		foreach (var i in xx) def[i] = true;
+		var rand = new Random();
+		a = Ie(n).Select((x, i) => -(x + 1) * (i + 3)).ToArray();
+		a = Ie(n).Select((x, i) => (long)(rand.Next() - 1000000000)).ToArray();
 
-		var d = new Dsu(n+m);
-		foreach (var i in Ie(e))
+		var times = a.Select((x, i) => (-x % (i + 1) == 0) ? -x / (i + 1) : -1).ToArray();
+		var timesOne = a.Select((x, i) => ((-x + 1) % (i + 1) == 0) ? (-x + 1) / (i + 1) : -1).ToArray();
+		//a.Select((x, i) => (-x % (i + 1))).Dump();
+		//a.Select((x, i) => (-x - 1) % (i + 1)).Dump();
+
+		var whenZero = new bool[n + 2];
+		var whenOne = new bool[n + 2];
+		//var dic2 = new Dictionary<long, List<long>>();
+		foreach (var i in Ie(n))
 		{
-			if (def[i]) continue;
-			d.Merge(l[i][0], l[i][1]);
-		}
-		
-		d.Groups().Dump();
-		d.ParentOrSize.Dump();
-		
-		var dic = Ie(n + m).GroupBy(x => d.Leader(x)).ToDictionary(x => x.Key, x => x.Any(y => y >= n));
-		var results = new long[q];
-		results[0] = Ie(n).Count(x => dic[d.Leader(x)]);
-		//d.Merge(l[xx[0]][0], l[xx[0]][1]);
-		foreach (var i in Ie(1, q - 1))
-		{
-			var diff = 0;
-			if (dic[d.Leader(l[xx[i - 1]][0])] != dic[d.Leader(l[xx[i - 1]][1])])
+			if (times[i] < n + 2 && times[i] >= 0)
 			{
-				d.Merge(l[xx[i - 1]][0], l[xx[i - 1]][1]);
-				
-				diff = dic[d.Leader(l[xx[i-1]][0])] ? d.Groups().First(x => x.Contains(l[xx[i-1]][0])).Count(x => x < n) :
-					d.Groups().First(x => x.Contains(l[xx[i-1]][1])).Count(x => x < n);
+				whenZero[times[i]] = true;
 			}
-			results[i] = results[i-1] + diff;
-			
-			//d.Merge(l[xx[i]][0], l[xx[i]][1]);
-		}
 
-		d.Groups().Dump();
-		d.ParentOrSize.Dump();
+			if (timesOne[i] < n + 2 && timesOne[i] >= 0)
+			{
+				whenOne[timesOne[i]] = true;
+			}
+			//if (dic2.ContainsKey(times[i]))
+			//{
+			//	var list = dic2[times[i]];
+			//	list.Add(i);
+			//	continue;
+			//}
+			//var ll = new List<long>() { i };
+			//dic2.Add(times[i], ll);
+		}
 		
-		foreach (var i in results.Reverse())
-			Wl(i);
+		//dic2.Dump();
+
+		//dic.Dump();
+
+		var l = new long[n];
+		
+		foreach (var i in Ie(m))
+		{
+			foreach (var j in Ie(n))
+			{
+				if (j == 0)
+				{
+					if (!whenZero[i + 1])
+					{
+						Wl(0);
+						break;
+					}
+				}
+				else
+				if (j == 1)
+				{
+					if (!whenOne[i + 1])
+					{
+						Wl(1);
+						break;
+					}
+				}
+				else
+				{
+					if (j == 2) l = a.Select((x, ii) => x + (ii + 1) * (i + 1)).ToArray();
+					if (!l.Contains(j))
+					{
+						Wl(j);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	static void Main()
@@ -70,7 +101,7 @@ static class Program
 		if (debug == 1)
 			foreach (var i in Ie(1, Inputter.GetCount()))
 			{
-				var inputter = new Inputter() { Num = i };
+				var inputter = new Inputter(){ Num = i };
 				Function(inputter);
 			}
 		else
@@ -82,31 +113,18 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"5 5 10
-2 3
-4 10
-5 10
-6 9
-2 9
-4 8
-1 7
-3 6
-8 10
-1 8
-6
-3
-5
-8
-10
-2
-7
+	$@"3 3
+-1 -1 -6
 
 ";
 		public static string _str2 =
-	$@"
+	$@"5 6
+-2 -2 -5 -7 -15
+
 ";
 		public static string _str3 =
-	$@"
+	$@"200000 200000
+1
 ";
 		public static string _str4 =
 	$@"
@@ -132,7 +150,7 @@ static class Program
 		private string[] lines = null;
 		private string[] GetLines()
 		{
-			var strs = new[] { _str1, _str2, _str3, _str4, _str5 };
+			var strs = new [] { _str1, _str2, _str3, _str4, _str5 };
 			if (lines == null)
 				lines = strs[Num - 1].Split("\n")
 					.Select(x => x.Replace("\n", "").Replace("\r", ""))
@@ -150,18 +168,18 @@ static class Program
 			return Console.ReadLine();
 		}
 	}
-
+	
 	public class Dsu
 	{
 		public long N { get; }
 		public long[] ParentOrSize { get; }
-
+		
 		public Dsu(long n)
 		{
 			N = n;
 			ParentOrSize = Ie(n).Select(x => -1L).ToArray();
 		}
-
+		
 		public long Merge(long a, long b)
 		{
 			var x = Leader(a);
@@ -172,29 +190,25 @@ static class Program
 			ParentOrSize[y] = x;
 			return x;
 		}
-
+		
 		public bool Same(long a, long b) => Leader(a) == Leader(b);
-
+		
 		public long Leader(long a)
 		{
 			if (ParentOrSize[a] < 0) return a;
 			return ParentOrSize[a] = Leader(ParentOrSize[a]);
 		}
-
+		
 		public long Size(long a) => ParentOrSize[Leader(a)];
 		public long[][] Groups() => Ie(N).GroupBy(x => Leader(x)).Select(x => x.ToArray()).ToArray();
 	}
-	
+
 	public class UnionFind
-		{
-			public long[] Parents { get; set; }
+	{
+		public long[] Parents { get; set; }
 		public UnionFind(long n)
 		{
-			this.Parents = new long[n];
-			for (int i = 0; i < n; i++)
-			{
-				this.Parents[i] = i;
-			}
+			Parents = Ie(n).Select(x => x).ToArray();
 		}
 		
 		public long Root(long x)
@@ -211,10 +225,7 @@ static class Program
 			Parents[rx] = ry;
 		}
 
-		public bool Same(long x, long y)
-		{
-			return Root(x) == Root(y);
-		}
+		public bool Same(long x, long y) => Root(x) == Root(y);
 	}
 
 	// 順列
