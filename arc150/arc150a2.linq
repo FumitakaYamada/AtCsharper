@@ -14,25 +14,78 @@ using System.Text.RegularExpressions;
 static class Program
 {
 	const int M = 1000000007;
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		var a = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
-		var c = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
-		
-		foreach (var i in Ie(n + 1))
+		var t = inputter.GetNext().ToLong();
+
+		foreach (var i in Ie(t))
 		{
-			foreach (var j in Ie(n + m + 1))
+			var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+			var n = inp[0];
+			var k = inp[1];
+			var s = inputter.GetNext();
+			var ca = s.ToCharArray();
+
+			var grp = s.Split('0').Where(x => x.Any()).ToArray();
+			//grp.Dump();
+			var ones = grp.Where(x => x.Contains('1')).ToArray();
+			if (ones.Any())
 			{
-				
+				if (ones.Count() >= 2)
+				{
+					Wl("No");
+				}
+				else
+				{
+					var str = ones.First();
+					
+					if (str.Length == k)
+					{
+						Wl("Yes");
+						continue;
+					}
+					if (str.Length < k)
+					{
+						Wl("No");
+						continue;
+					}
+					
+
+					var f = str.IndexOf('1');
+					var l = str.LastIndexOf('1');
+					
+					if (l - f + 1 > k)
+					{
+						Wl("No");
+					}
+					else if (l - f + 1 == k)
+					{
+						Wl("Yes");
+					}
+					else
+					{
+						if (f == 0 || l == str.Length - 1)
+							Wl("Yes");
+						else
+							Wl("No");
+					}
+				}
+			}
+			else
+			{
+				if (!grp.Any(x => x.Length > k) &&
+					grp.Count(x => x.Length == k) == 1)
+				{
+					Wl("Yes");
+				}
+				else
+				{
+					Wl("No");
+				}
 			}
 		}
-
-		Wl();
 	}
 
 	static void Main()
@@ -52,7 +105,10 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+
+	$@"1
+10 5
+??1?00000
 ";
 		public static string _str2 =
 	$@"

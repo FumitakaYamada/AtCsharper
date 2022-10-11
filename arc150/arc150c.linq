@@ -14,25 +14,84 @@ using System.Text.RegularExpressions;
 static class Program
 {
 	const int M = 1000000007;
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
 		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
 		var n = inp[0];
 		var m = inp[1];
-		var a = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
-		var c = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
+		var k = inp[2];
+		var uv = Ie(m).Select(x => inputter.GetNext().Split().Select(ToLong).ToArray()).ToArray();
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var b = inputter.GetNext().Split().Select(ToLong).ToArray();
+
+		var lu = uv.ToLookup(x => x[0], x => x[1]);
+	
+		var pathes = new List<long[]>();
+
+		var currentPath = new List<long>();
+		var went = new bool[n + 1];
+		var current = 1L;
+		currentPath.Add(1);
+		went[current] = true;
 		
-		foreach (var i in Ie(n + 1))
+		void Dfs()
 		{
-			foreach (var j in Ie(n + m + 1))
+			if (current == n)
 			{
+				pathes.Add(currentPath.ToArray());
+			}
+			
+			foreach (var i in lu[current])
+			{
+				if (went[i]) continue;
 				
+				went[i] = true;
+				currentPath.Add(i);
+				
+				var lc = current;
+				current = i;
+
+				Dfs();
+				
+				current = lc;
+				currentPath.Remove(i);
+				went[i] = false;
 			}
 		}
+		
+		Dfs();
+		
+		//pathes.Dump();
+		
+		var how = true;
+		
+		foreach (var i in pathes)
+		{
+			var aa = i.Select(x => a[x - 1]).ToArray();
+			
+			var success = true;
+			var cur = -1;
+			foreach (var j in Ie(b.Length))
+			{
+				var idx = Array.IndexOf(aa, b[j]);
+				
+				if (idx > cur)
+				{
+					cur = idx;
+				}
+				else
+				{
+					success = false;
+					break;
+				}
+			}
+			
+			if (!success) how = false;
+		}
 
-		Wl();
+		Wl(how ? "Yes" : "No");
 	}
 
 	static void Main()
@@ -52,7 +111,15 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"6 6 3
+1 2
+1 3
+2 4
+3 5
+4 6
+5 6
+1 2 4 5 2 6
+1 2 6
 ";
 		public static string _str2 =
 	$@"

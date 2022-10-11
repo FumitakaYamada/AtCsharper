@@ -18,19 +18,12 @@ static class Program
 	
 	static void Function(Inputter inputter)
 	{
+		var s = inputter.GetNext();
+		var n = inputter.GetNext().ToLong();
 		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		var a = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
-		var c = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
-		
-		foreach (var i in Ie(n + 1))
-		{
-			foreach (var j in Ie(n + m + 1))
-			{
-				
-			}
-		}
+		var a = inp[0];
+		var b = inp[1];
+		var l = Ie(n).Select(x => inputter.GetNext().Split().Select(ToLong).ToArray()).ToArray();
 
 		Wl();
 	}

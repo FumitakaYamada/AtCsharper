@@ -14,25 +14,155 @@ using System.Text.RegularExpressions;
 static class Program
 {
 	const int M = 1000000007;
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		var a = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
-		var c = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
-		
-		foreach (var i in Ie(n + 1))
-		{
-			foreach (var j in Ie(n + m + 1))
-			{
-				
-			}
-		}
+		var t = inputter.GetNext().ToLong();
 
-		Wl();
+		foreach (var i in Ie(t))
+		{
+			var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+			var n = inp[0];
+			var k = inp[1];
+			var s = inputter.GetNext();
+			var ca = s.ToCharArray();
+
+			var lo = -1L;
+			var mmRanges = new List<long[]>();
+			var mmInitial = -1L;
+			var mixRanges = new List<long[]>();
+			var mixInitial = -1L;
+			//var oneRanges = new List<long[]>();
+			//var oneInitial = -1L;
+			var hatenaRanges = new List<long[]>();
+			var hatenaInitial = -1L;
+
+			foreach (var j in Ie(ca.Length))
+			{
+				var c = ca[j];
+
+				if (c.Equals('1') || c.Equals('?'))
+				{
+					if (mixInitial == -1)
+					{
+						mixInitial = j;
+					}
+					if (c.Equals('1') && mmInitial == -1)
+					{
+						mmInitial = j;
+					}
+					if (c.Equals('1'))
+					{
+						lo = j;
+					}
+				}
+				else
+				{
+					if (mixInitial != -1)
+					{
+						if (lo != -1) mixRanges.Add(new long[] { mixInitial, j });
+						mixInitial = -1;
+					}
+					if (mmInitial != -1)
+					{
+						mmRanges.Add(new long[] { mmInitial, lo+1 });
+						mmInitial = -1;
+						lo = -1;
+					}
+				}
+
+//				if (c.Equals('1'))
+//				{
+//					if (oneInitial == -1)
+//					{
+//						oneInitial = j;
+//					}
+//				}
+//				else
+//				{
+//					if (oneInitial != -1)
+//					{
+//						oneRanges.Add(new long[] { oneInitial, j });
+//						oneInitial = -1;
+//					}
+//				}
+//
+				if (c.Equals('?'))
+				{
+					if (hatenaInitial == -1)
+					{
+						hatenaInitial = j;
+					}
+				}
+				else
+				{
+					if (hatenaInitial != -1)
+					{
+						hatenaRanges.Add(new long[] { hatenaInitial, j });
+						hatenaInitial = -1;
+					}
+				}
+			}
+			if (hatenaInitial != -1)
+			{
+				hatenaRanges.Add(new long[] { hatenaInitial, ca.Length });
+			}
+			//if (oneInitial != -1)
+			//{
+			//	oneRanges.Add(new long[] { oneInitial, ca.Length });
+			//}
+			if (mixInitial != -1)
+			{
+				if (lo != -1) mixRanges.Add(new long[] { mixInitial, ca.Length });
+			}
+			if (mmInitial != -1)
+			{
+				mmRanges.Add(new long[] { mmInitial, lo+1 });
+				mmInitial = -1;
+			}
+
+			//oneRanges.Dump();
+			//"=============".Dump();
+			//mixRanges.Dump();
+			//mmRanges.Dump();
+
+			// 1が0こパターン
+			if (mixRanges.Count() != 1)
+			{
+				//hatenaRanges.Dump();
+				
+				if (hatenaRanges.Count() == 1 &&
+					hatenaRanges[0][1] - hatenaRanges[0][0] == k)
+				{
+					Wl("Yes");
+				}
+				else
+				{
+					Wl("No");
+				}
+				
+				continue;
+			}
+			var mixRange = mixRanges[0];
+			var mmRange = mmRanges[0];
+			
+			if (mmRange[1] - mmRange[0] <= k && 
+				(
+					mixRange[1] - mixRange[0] == k ||
+					(
+						mixRange[1] - mixRange[0] > k &&
+						(mmRange[1] == mixRange[1] || mmRange[0] == mixRange[0])
+					)
+				)
+				)
+			{
+				Wl("Yes");
+				continue;
+			}
+
+			Wl("No");
+		}
 	}
 
 	static void Main()
@@ -52,7 +182,9 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"1
+8 1
+0000?00
 ";
 		public static string _str2 =
 	$@"
@@ -60,6 +192,16 @@ static class Program
 		public static string _str3 =
 	$@"
 ";
+//	$@"4
+//3 2
+//1??
+//4 2
+//?1?0
+//6 3
+//011?1?
+//10 5
+//00?1???10?
+//";
 		public static string _str4 =
 	$@"
 ";

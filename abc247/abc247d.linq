@@ -14,25 +14,45 @@ using System.Text.RegularExpressions;
 static class Program
 {
 	const int M = 1000000007;
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		var a = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
-		var c = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
+		var q = inputter.GetNext().ToLong();
 		
-		foreach (var i in Ie(n + 1))
+		// number, count
+		var b = new LinkedList<long[]>();
+		
+		foreach (var i in Ie(q))
 		{
-			foreach (var j in Ie(n + m + 1))
+			var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+			
+			if (inp[0] == 1)
 			{
-				
+				b.AddLast(new long[] { inp[1], inp[2] });
+			}
+			else
+			{
+				var sum = 0L;
+				var left = inp[1];
+				while (left > 0)
+				{
+					var nums = b.First();
+					b.RemoveFirst();
+					if (left < nums[1])
+					{
+						b.AddFirst(new long[] { nums[0], nums[1] - left });
+
+						sum += nums[0] * left;
+						left = 0;
+						continue;
+					}
+					sum += nums[0] * nums[1];
+					left -= nums[1];
+				}
+				Wl(sum);
 			}
 		}
-
-		Wl();
 	}
 
 	static void Main()
@@ -52,13 +72,27 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"4
+1 2 3
+2 2
+1 3 4
+2 3
+
 ";
 		public static string _str2 =
-	$@"
+	$@"2
+1 1000000000 1000000000
+2 1000000000
+
 ";
 		public static string _str3 =
-	$@"
+	$@"5
+1 1 1
+1 1 1
+1 1 1
+1 1 1
+1 1 1
+
 ";
 		public static string _str4 =
 	$@"

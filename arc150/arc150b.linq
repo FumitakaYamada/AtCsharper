@@ -14,25 +14,54 @@ using System.Text.RegularExpressions;
 static class Program
 {
 	const int M = 1000000007;
-	static int debug = 1;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		var a = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
-		var c = inputter.GetNext().Split().Select(ToLong).Reverse().ToArray();
-		
-		foreach (var i in Ie(n + 1))
-		{
-			foreach (var j in Ie(n + m + 1))
-			{
-				
-			}
-		}
+		var t = inputter.GetNext().ToLong();
 
-		Wl();
+		foreach (var _ in Ie(t))
+		{
+			var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
+			var a = inp[0];
+			var b = inp[1];
+
+			if (b <= a)
+			{
+				Wl(a - b);
+				continue;
+			}
+			if (b % a == 0)
+			{
+				Wl(0);
+				continue;
+			}
+
+			long GetAns()
+			{
+				return Math.Min(b - a, a - (b % a == 0 ? a : b % a));
+			}
+
+			var wc = GetAns();
+			var ac = wc;
+			
+			var multip = b / a + 1;
+			
+			foreach (var j in Ie(10000000))
+			{
+				var mm = multip - j;
+				if (mm <= 0) break;
+
+				var aa = (long)Math.Ceiling((double)b / mm);
+				if (aa < a) continue;
+				var bb = aa * mm;
+				if (bb < b) continue;
+				
+				ac = Math.Min(ac, (bb - b) + (aa - a));
+			}
+			
+			Wl(ac);
+		}
 	}
 
 	static void Main()
@@ -52,7 +81,13 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"
+	$@"6
+11 23
+8 16
+4394 993298361
+95392025 569922442
+8399283 10293
+400000000 1000000000
 ";
 		public static string _str2 =
 	$@"
