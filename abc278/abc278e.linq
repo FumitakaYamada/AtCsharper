@@ -13,40 +13,50 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	const int M = 998244353;
+	const int M = 1000000007;
 	static int debug = 1;
 	
 	static void Function(Inputter inputter)
 	{
 		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		var p = inputter.GetNext().Split().Select(ToLong).ToArray();
-
-		var pathes = Ie(n)
-			.Select(x => new long[] { x + 1, p[x] })
-			.ToArray();
+		var hh = inp[0];
+		var ww = inp[1];
+		var n = inp[2];
+		var h = inp[3];
+		var w = inp[4];
+		var l = Ie(hh).Select(x => inputter.GetNext().Split().Select(ToLong).ToArray()).ToArray();
 		
-		pathes.Dump();
-
-		var dp = new long[n + 1];
-		dp[0] = 1;
-		var dpSame = new long[n + 1];
-		dpSame[0] = 1;
-
-		foreach (var i in Ie(n))
+		var dp = new long[hh + 1, ww + 1, n + 1];
+		
+		foreach (var i in Ie(1, hh))
 		{
-			var count = n - i - 1;
-			if (p[i] > i) count --;
-			dp[i+1] = ModPow(m, count);
-			
-			dpSame[i+1] = 
+			foreach (var j in Ie(1, ww))
+			{
+				foreach (var k in Ie(1, n))
+				{
+					dp[i, j, k] = dp[i - 1, j, k] + dp[i, j - 1, k] - dp[i - 1, j - 1, k];
+					if (k == l[i - 1][j - 1]) dp[i, j, k]++;
+				}
+			}
 		}
 		
-		dp.Dump();
-		
-
-		Wl();
+		foreach (var i in Ie(hh - h + 1))
+		{
+			var ans = new List<long>();
+			foreach (var j in Ie(ww - w + 1))
+			{
+				var count = 0L;
+				
+				foreach (var k in Ie(1, n))
+				{
+					if (dp[hh, ww, k] - dp[h + i, w + j, k] + dp[h, w + j, k] + dp[h + i, w, k] - dp[i, j, k] > 0)
+						count++;
+				}
+				
+				ans.Add(count);
+			}
+			Wl(string.Join(" ", ans));
+		}
 	}
 
 	static void Main()
@@ -66,14 +76,33 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"4 2
-4 1 3 2
+	$@"3 4 5 2 2
+2 2 1 1
+3 2 5 3
+3 4 4 3
+
 ";
 		public static string _str2 =
-	$@"
+	$@"5 6 9 3 4
+7 1 5 3 9 5
+4 5 4 5 1 2
+6 1 6 2 9 7
+4 7 1 5 8 8
+3 4 3 3 5 3
+
 ";
 		public static string _str3 =
-	$@"
+	$@"9 12 30 4 7
+2 2 2 2 2 2 2 2 2 2 2 2
+2 2 20 20 2 2 5 9 10 9 9 23
+2 29 29 29 29 29 28 28 26 26 26 15
+2 29 29 29 29 29 25 25 26 26 26 15
+2 29 29 29 29 29 25 25 8 25 15 15
+2 18 18 18 18 1 27 27 25 25 16 16
+2 19 22 1 1 1 7 3 7 7 7 7
+2 19 22 22 6 6 21 21 21 7 7 7
+2 19 22 22 22 22 21 21 21 24 24 24
+
 ";
 		public static string _str4 =
 	$@"

@@ -13,40 +13,70 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	const int M = 998244353;
-	static int debug = 1;
+	const int M = 1000000007;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
 		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
+		var h = inp[0];
 		var m = inp[1];
-		var p = inputter.GetNext().Split().Select(ToLong).ToArray();
 
-		var pathes = Ie(n)
-			.Select(x => new long[] { x + 1, p[x] })
-			.ToArray();
-		
-		pathes.Dump();
-
-		var dp = new long[n + 1];
-		dp[0] = 1;
-		var dpSame = new long[n + 1];
-		dpSame[0] = 1;
-
-		foreach (var i in Ie(n))
+		bool exist(long a, long b, long c, long d)
 		{
-			var count = n - i - 1;
-			if (p[i] > i) count --;
-			dp[i+1] = ModPow(m, count);
-			
-			dpSame[i+1] = 
+			if ((a == 2 && b <= 3) ||
+				(a == 0 || a == 1))
+			{
+				if (c <= 5)
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 		
-		dp.Dump();
-		
+		var a = h / 10;
+		var b = h % 10;
+		var c = m / 10;
+		var d = m % 10;
 
-		Wl();
+		while (true)
+		{
+			if (exist(a, c, b, d))
+			{
+				Wl($"{a * 10 + b} {c * 10 + d}");
+				return;
+			}
+
+			d++;
+			
+			if (d == 10)
+			{
+				d = 0;
+				c ++;
+			}
+			
+			if (c == 6)
+			{
+				c = 0;
+				b ++;
+			}
+			
+			if (b == 10)
+			{
+				a ++;
+				b = 0;
+			}
+			
+			if (b == 4 && (a == 2))
+			{
+				a = 0;
+				b = 0;
+			}
+
+			//Wl($"{a}{b}:{c}{d}");
+			
+		}
 	}
 
 	static void Main()
@@ -66,14 +96,16 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"4 2
-4 1 3 2
+	$@"1 23
+
 ";
 		public static string _str2 =
-	$@"
+	$@"19 57
+
 ";
 		public static string _str3 =
-	$@"
+	$@"20 40
+
 ";
 		public static string _str4 =
 	$@"

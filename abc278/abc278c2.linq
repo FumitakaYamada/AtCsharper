@@ -13,40 +13,71 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	const int M = 998244353;
+	const int M = 1000000007;
 	static int debug = 1;
 	
 	static void Function(Inputter inputter)
 	{
 		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
 		var n = inp[0];
-		var m = inp[1];
-		var p = inputter.GetNext().Split().Select(ToLong).ToArray();
-
-		var pathes = Ie(n)
-			.Select(x => new long[] { x + 1, p[x] })
-			.ToArray();
-		
-		pathes.Dump();
-
-		var dp = new long[n + 1];
-		dp[0] = 1;
-		var dpSame = new long[n + 1];
-		dpSame[0] = 1;
-
-		foreach (var i in Ie(n))
+		var q = inp[1];
+		var l = Ie(q).Select(x =>
 		{
-			var count = n - i - 1;
-			if (p[i] > i) count --;
-			dp[i+1] = ModPow(m, count);
-			
-			dpSame[i+1] = 
-		}
-		
-		dp.Dump();
-		
+			var l = inputter.GetNext().Split().Select(ToLong).Select(x => x - 1).ToList();
+			l.Add(x);
+			return l;
+		}).ToList();
 
-		Wl();
+		q = 200000;
+		l = Ie(q).Select(x => new List<long> { 2, 0, 1 }).ToList();
+		
+		var fd = l.Where(x => x[0] != 2).GroupBy(x => x[1])
+
+		foreach (int i in Ie(q))
+		{
+			if (l[i][0] == 2)
+			{
+				var go = false;
+				var back = false;
+				var error = false;
+				
+				foreach (var j in l.Take(i - 1).Where(x => x[0] != 2 &&
+					(x[1] == l[i][1] ||
+					x[2] == l[i][1] ||
+					x[1] == l[i][2] ||
+					x[2] == l[i][2])).Reverse())
+				{
+					if (j[0] == 2) continue;
+					
+					if ((j[1] == l[i][1] && j[2] == l[i][2]))
+					{
+						if (j[0] == 1)
+						{
+							error = true;
+							break;
+						}
+						
+						go = true;
+					}
+					if (j[1] == l[i][2] && j[2] == l[i][1])
+					{
+						if (j[0] == 1)
+						{
+							error = true;
+							break;
+						}
+
+						back = true;
+					}
+					if (go && back)
+					{
+						break;
+					}
+				}
+				
+				Wl(!error && go && back ? "Yes" : "No");
+			}
+		}
 	}
 
 	static void Main()
@@ -56,6 +87,7 @@ static class Program
 			{
 				var inputter = new Inputter(){ Num = i };
 				Function(inputter);
+				Wl("++++++++++++++NEXT++++++++++++++++++++");
 			}
 		else
 			Function(new Inputter());
@@ -66,17 +98,67 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"4 2
-4 1 3 2
+	$@"3 9
+1 1 2
+3 1 2
+1 2 1
+3 1 2
+1 2 3
+1 3 2
+3 1 3
+2 1 2
+3 1 2
+
 ";
 		public static string _str2 =
-	$@"
+	$@"2 8
+1 1 2
+1 2 1
+3 1 2
+1 1 2
+1 1 2
+1 1 2
+2 1 2
+3 1 2
+
 ";
 		public static string _str3 =
-	$@"
+	$@"10 30
+3 1 6
+3 5 4
+1 6 1
+3 1 7
+3 8 4
+1 1 6
+2 4 3
+1 6 5
+1 5 6
+1 1 8
+1 8 1
+2 3 10
+1 7 6
+3 5 6
+1 6 7
+3 6 7
+1 9 5
+3 8 6
+3 3 8
+2 6 9
+1 7 1
+3 10 8
+2 9 2
+1 10 9
+2 6 10
+2 6 8
+3 1 6
+3 1 8
+2 8 5
+1 9 10
+
 ";
 		public static string _str4 =
-	$@"
+	$@"1000000000 1
+1 1 1
 ";
 		public static string _str5 =
 	$@"

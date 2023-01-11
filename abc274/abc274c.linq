@@ -13,38 +13,18 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	const int M = 998244353;
+	const int M = 1000000007;
 	static int debug = 1;
 	
 	static void Function(Inputter inputter)
 	{
-		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		var p = inputter.GetNext().Split().Select(ToLong).ToArray();
-
-		var pathes = Ie(n)
-			.Select(x => new long[] { x + 1, p[x] })
-			.ToArray();
+		var n = inputter.GetNext().ToLong();
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
 		
-		pathes.Dump();
-
-		var dp = new long[n + 1];
-		dp[0] = 1;
-		var dpSame = new long[n + 1];
-		dpSame[0] = 1;
-
-		foreach (var i in Ie(n))
+		foreach (var i in Ie(2 * n + 1))
 		{
-			var count = n - i - 1;
-			if (p[i] > i) count --;
-			dp[i+1] = ModPow(m, count);
 			
-			dpSame[i+1] = 
 		}
-		
-		dp.Dump();
-		
 
 		Wl();
 	}
@@ -66,8 +46,7 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"4 2
-4 1 3 2
+	$@"
 ";
 		public static string _str2 =
 	$@"

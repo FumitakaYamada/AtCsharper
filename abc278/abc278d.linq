@@ -13,40 +13,51 @@ using System.Text.RegularExpressions;
 
 static class Program
 {
-	const int M = 998244353;
-	static int debug = 1;
+	const int M = 1000000007;
+	static int debug = 2;
 	
 	static void Function(Inputter inputter)
 	{
-		var inp = inputter.GetNext().Split().Select(ToLong).ToArray();
-		var n = inp[0];
-		var m = inp[1];
-		var p = inputter.GetNext().Split().Select(ToLong).ToArray();
-
-		var pathes = Ie(n)
-			.Select(x => new long[] { x + 1, p[x] })
-			.ToArray();
+		var n = inputter.GetNext().ToLong();
+		var a = inputter.GetNext().Split().Select(ToLong).ToArray();
+		var q = inputter.GetNext().ToLong();
+		var qq = Ie(q).Select(x => inputter.GetNext().Split().Select(ToLong).ToArray()).ToArray();
+	
+		var touched = Ie(n).ToList();
 		
-		pathes.Dump();
+		var diff = a;
+		
+		var flush = 0L;
+		
+		var zeroArray = new long[n];
 
-		var dp = new long[n + 1];
-		dp[0] = 1;
-		var dpSame = new long[n + 1];
-		dpSame[0] = 1;
-
-		foreach (var i in Ie(n))
+		void clear()
 		{
-			var count = n - i - 1;
-			if (p[i] > i) count --;
-			dp[i+1] = ModPow(m, count);
-			
-			dpSame[i+1] = 
+			foreach (var i in touched)
+			{
+				diff[i] = 0;
+			}
+			touched = new List<long>();
 		}
 		
-		dp.Dump();
-		
-
-		Wl();
+		foreach (var p in qq)
+		{
+			if (p[0] == 1)
+			{
+				flush = p[1];
+				clear();
+				continue;
+			}
+			
+			if (p[0] == 2)
+			{
+				diff[p[1] - 1] += p[2];
+				touched.Add(p[1] - 1);
+				continue;
+			}
+			
+			Wl(flush + diff[p[1] - 1]);
+		}
 	}
 
 	static void Main()
@@ -66,14 +77,56 @@ static class Program
 		public long Num { get; set; } = 1;
 
 		public static string _str1 =
-	$@"4 2
-4 1 3 2
+	$@"5
+3 1 4 1 5
+6
+3 2
+2 3 4
+3 3
+1 1
+2 3 4
+3 3
+
 ";
 		public static string _str2 =
-	$@"
+	$@"1
+1000000000
+8
+2 1 1000000000
+2 1 1000000000
+2 1 1000000000
+2 1 1000000000
+2 1 1000000000
+2 1 1000000000
+2 1 1000000000
+3 1
+
 ";
 		public static string _str3 =
-	$@"
+	$@"10
+1 8 4 15 7 5 7 5 8 0
+20
+2 7 0
+3 7
+3 8
+1 7
+3 3
+2 4 4
+2 4 9
+2 10 5
+1 10
+2 4 2
+1 10
+2 3 1
+2 8 11
+2 3 14
+2 1 9
+3 8
+3 8
+3 1
+2 6 5
+3 7
+
 ";
 		public static string _str4 =
 	$@"
